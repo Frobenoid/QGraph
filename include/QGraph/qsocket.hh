@@ -2,12 +2,13 @@
 
 #include <any>
 #include <cstdint>
+#include <iostream>
 #include <optional>
 #include <set>
 
 template <typename T> class InSocket {
 private:
-  T default_value = current_value;
+  T default_value;
   T current_value;
 
 public:
@@ -15,7 +16,8 @@ public:
   uint16_t id;
   std::optional<uint16_t> connected_to;
 
-  InSocket(T default_value) : default_value(default_value) {};
+  InSocket(T default_value)
+      : default_value(default_value), current_value(default_value) {};
 
   ~InSocket() {};
 
@@ -30,11 +32,33 @@ public:
 
   InSocket<std::any> type_erase() {
     // TODO: Cast to any all T dependent props.
-    std::any default_value = this->default_value;
-    InSocket<std::any> dest(default_value);
+    std::any default_value_any = this->default_value;
+    std::any current_value_any = this->current_value;
+    InSocket<std::any> dest(default_value_any);
+    dest.set_current_value(current_value_any);
 
     return dest;
   };
+
+  template <typename F> InSocket<F> cast_to() {
+    if constexpr (std::is_same_v<T, std::any>) {
+      // TODO: Verify std::any can be casted to F.
+
+      try {
+        F current_value_casted = std::any_cast<F>(this->current_value);
+        F default_value_casted = std::any_cast<F>(this->default_value);
+
+        InSocket<F> dest(default_value_casted);
+        dest.set_current_value(current_value_casted);
+
+        return dest;
+      } catch (const std::bad_any_cast &e) {
+        std::cerr << "Bad casting: " << e.what() << "\n";
+      }
+    } else {
+      // TODO: Implement other forms of casting.
+    }
+  }
 };
 
 template <typename T> class OutSocket {
@@ -65,11 +89,31 @@ public:
 
   OutSocket<std::any> type_erase() {
     // TODO: Cast to any all T dependent props.
-    std::any default_value = this->default_value;
-    OutSocket<std::any> dest(default_value);
+    std::any default_value_any = this->default_value;
+    std::any current_value_any = this->current_value;
+    OutSocket<std::any> dest(default_value_any);
+    dest.set_current_value(current_value_any);
 
     return dest;
   };
+
+  template <typename F> OutSocket<F> cast_to() {
+    if constexpr (std::is_same_v<T, std::any>) {
+      try {
+        F current_value_casted = std::any_cast<F>(this->current_value);
+        F default_value_casted = std::any_cast<F>(this->default_value);
+
+        OutSocket<F> dest(default_value_casted);
+        dest.set_current_value(current_value_casted);
+
+        return dest;
+      } catch (const std::bad_any_cast &e) {
+        std::cerr << "Bad casting: " << e.what() << "\n";
+      }
+    } else {
+      // TODO: Implement other forms of casting.
+    }
+  }
 };
 
 // TODO: Write InSocket<T> -> InSocket<std::any>.

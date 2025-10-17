@@ -1,6 +1,5 @@
 #include <QGraph/qnode.hh>
 #include <QGraph/qsocket.hh>
-#include <any>
 #include <catch2/catch_test_macros.hpp>
 
 TEST_CASE("Validate env") { REQUIRE(true); }
@@ -8,12 +7,6 @@ TEST_CASE("Validate env") { REQUIRE(true); }
 TEST_CASE("Validate default values") {
   InSocket<int> a(10);
   REQUIRE(a.get_default_value() == 10);
-}
-
-TEST_CASE("Test connection") {
-  InSocket<bool> a(true);
-
-  OutSocket<bool> b(false);
 }
 
 TEST_CASE("Get values from node") {
@@ -25,14 +18,21 @@ TEST_CASE("Get values from node") {
   n.add_input_socket<int>(a);
   n.add_output_socket<bool>(b);
 
-  // TODO: simplify this!!
-  InSocket<std::any> temp = n.get_in_socket(0);
-  int cast = std::any_cast<int>(temp.get_default_value());
+  auto a_cast = n.get_in_socket(0).cast_to<int>();
+  auto b_cast = n.get_out_socket(0).cast_to<bool>();
 
-  REQUIRE(cast == 20);
+  REQUIRE(a_cast.get_default_value() == 20);
 
-  OutSocket<std::any> temp1 = n.get_out_socket(0);
-  bool cast1 = std::any_cast<bool>(temp1.get_default_value());
+  REQUIRE(b_cast.get_default_value() == false);
+}
 
-  REQUIRE(cast1 == false);
+TEST_CASE("Set current, get current") {
+  InSocket<int> a(20);
+  a.set_current_value(100);
+
+  Node n;
+
+  n.add_input_socket(a);
+
+  REQUIRE(n.get_in_socket(0).cast_to<int>().get_current_value() == 100);
 }

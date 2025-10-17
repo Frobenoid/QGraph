@@ -31,7 +31,6 @@ public:
   void disconnect() { this->connected_to.reset(); }
 
   InSocket<std::any> type_erase() {
-    // TODO: Cast to any all T dependent props.
     std::any default_value_any = this->default_value;
     std::any current_value_any = this->current_value;
     InSocket<std::any> dest(default_value_any);
@@ -88,7 +87,6 @@ public:
   void disconnect_all() { this->connected_to.clear(); }
 
   OutSocket<std::any> type_erase() {
-    // TODO: Cast to any all T dependent props.
     std::any default_value_any = this->default_value;
     std::any current_value_any = this->current_value;
     OutSocket<std::any> dest(default_value_any);

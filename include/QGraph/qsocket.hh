@@ -6,6 +6,55 @@
 #include <optional>
 #include <set>
 
+namespace qgraph {
+
+class Socket {
+public:
+  virtual ~Socket() = default;
+};
+
+template <typename T> class InSocket : public Socket {
+private:
+  T default_value_;
+  T current_value_;
+
+public:
+  // Index in parent node.
+  uint16_t id;
+  std::optional<uint16_t> connected_to;
+  std::string label;
+
+  InSocket(std::string label) : label(label) {};
+
+  T get_current_value() const { return this->current_value_; };
+  T get_default_value() const { return this->default_value_; };
+
+  void set_current_value(T to) { this->current_value_ = to; };
+  void set_default_value(T to) { this->default_value_ = to; };
+
+  void connect(uint16_t to_socket) { this->connected_to = to_socket; }
+  void disconnect() { this->connected_to.reset(); }
+};
+
+namespace builder {
+
+template <typename T> class InSocketBuilder {
+private:
+  qgraph::InSocket<T> *socket_;
+
+public:
+  InSocketBuilder(qgraph::InSocket<T> *socket) : socket_(socket) {};
+
+  InSocketBuilder &with_default_value(T default_value) {
+    socket_->set_default_value(default_value);
+    socket_->set_current_value(default_value);
+    return *this;
+  };
+};
+
+} // namespace builder
+} // namespace qgraph
+
 template <typename T> class InSocket {
 private:
   T default_value;

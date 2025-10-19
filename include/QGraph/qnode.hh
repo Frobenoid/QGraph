@@ -1,10 +1,10 @@
 #pragma once
 
 #include <QGraph/qsocket.hh>
-#include <any>
 #include <cassert>
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <stdexcept>
 #include <unordered_map>
 #include <vector>
@@ -12,11 +12,12 @@
 namespace qgraph {
 class Node {
 private:
-  // std::vector<qgraph::Socket> in_sockets;
-
-public:
   std::unordered_map<std::string, std::uint16_t> in_sockets_labels;
   std::vector<std::unique_ptr<qgraph::Socket>> in_sockets;
+  std::unordered_map<std::string, std::uint16_t> out_sockets_labels;
+  std::vector<std::unique_ptr<qgraph::Socket>> out_sockets;
+
+public:
   Node() {};
 
   template <typename T>
@@ -38,57 +39,44 @@ public:
   };
 
   template <typename T>
-  qgraph::InSocket<T> *get_input_socket(std::string label) {
-    // Retrieve index.
-    // TODO: Make checks!
-    uint16_t id = in_sockets_labels.at(label);
+  builder::OutSocketBuilder<T> add_output_socket(std::string label) {
+    if (!out_sockets_labels.contains(label)) {
+      auto new_socket = std::make_unique<qgraph::OutSocket<T>>(label);
+      OutSocket<T> *ptr = new_socket.get();
+      this->out_sockets.push_back(std::move(new_socket));
+      ptr->id = this->out_sockets.size() - 1;
+      out_sockets_labels.insert({label, ptr->id});
 
-    // Retrieve socket pointer.
-    qgraph::Socket *base_prt = this->in_sockets[id].get();
+      return builder::OutSocketBuilder<T>(ptr);
+    } else {
+      throw std::runtime_error("Outsocket with name ... already exists");
+    }
+  };
 
-    // Casting to T.
-    // TODO: Ensure this casting is posible.
-    qgraph::InSocket<T> *derived_ptr =
-        dynamic_cast<qgraph::InSocket<T> *>(base_prt);
+  // TODO: Use smart pointer
+  template <typename T>
+  std::optional<qgraph::InSocket<T> *> get_input_socket(std::string label) {
+    if (auto id = in_sockets_labels.find(label);
+        id != in_sockets_labels.end()) {
 
-    return derived_ptr;
+      qgraph::Socket *base_prt = this->in_sockets[id->second].get();
+
+      return dynamic_cast<qgraph::InSocket<T> *>(base_prt);
+    }
+
+    return std::nullopt;
+  };
+
+  // TODO: Use smart pointer
+  template <typename T>
+  std::optional<qgraph::OutSocket<T> *> get_output_socket(std::string label) {
+    if (auto id = out_sockets_labels.find(label);
+        id != out_sockets_labels.end()) {
+      qgraph::Socket *base_ptr = this->out_sockets[id->second].get();
+      return dynamic_cast<qgraph::OutSocket<T> *>(base_ptr);
+    }
+
+    return std::nullopt;
   };
 };
 } // namespace qgraph
-
-class Node {
-
-public:
-  std::vector<InSocket<std::any>> in_sockets;
-  std::vector<OutSocket<std::any>> out_sockets;
-
-  Node() {};
-
-  template <typename F> void add_input_socket(InSocket<F> in_socket) {
-    this->in_sockets.push_back(in_socket.type_erase());
-  }
-
-  template <typename F> void add_output_socket(OutSocket<F> out_socket) {
-    this->out_sockets.push_back(out_socket.type_erase());
-  }
-
-  InSocket<std::any> get_in_socket(std::uint16_t id) {
-    if (id < this->in_sockets.size()) {
-      return in_sockets[id];
-    } else {
-      throw std::runtime_error("Out of bounds input socket");
-    }
-  };
-
-  template <typename T> InSocket<T> get_input_socket(std::uint16_t id) {
-    auto type_erased = in_sockets[id];
-  };
-
-  OutSocket<std::any> get_out_socket(std::uint16_t id) {
-    if (id < this->out_sockets.size()) {
-      return out_sockets[id];
-    } else {
-      throw std::runtime_error("Out of bounds input socket");
-    }
-  };
-};

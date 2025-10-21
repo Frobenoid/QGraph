@@ -16,6 +16,9 @@ using SocketId = uint16_t;
 class Socket {
 public:
   virtual ~Socket() = default;
+  virtual std::set<std::pair<NodeId, SocketId>> get_neighbors() const {
+    return {};
+  };
 };
 
 template <typename T> class InSocket : public Socket {
@@ -77,6 +80,10 @@ public:
   void disconnect(const uint16_t to_node, const uint16_t at_socket) {
     connected_to.erase(std::pair(to_node, at_socket));
   };
+
+  std::set<std::pair<NodeId, SocketId>> get_neighbors() const override {
+    return this->connected_to;
+  }
 };
 
 namespace builder {

@@ -1,8 +1,12 @@
 #include <QGraph/qnode.hh>
 #include <QGraph/qsocket.hh>
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers.hpp>
+#include <catch2/matchers/catch_matchers_vector.hpp>
+#include <cstdint>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 TEST_CASE("Socket builder", "[socket]") {
   qgraph::Node n;
@@ -65,4 +69,30 @@ TEST_CASE("Socket connection", "[socket, connection]") {
   b.disconnect(0, 0);
 
   REQUIRE_FALSE(b.connected_to.contains(std::pair(0, 0)));
+}
+
+TEST_CASE("Get neighbors", "[socket, connection]") {
+  qgraph::Node n;
+
+  n.add_output_socket<bool>("a");
+
+  auto a = n.get_output_socket<bool>("a").value();
+
+  a->connect(0, 0);
+  a->connect(0, 1);
+  a->connect(1, 0);
+  a->connect(1, 1);
+
+  REQUIRE(a->connected_to.size() == 4);
+
+  REQUIRE(n.get_neighbors().size() == 4);
+
+  std::vector<std::pair<uint16_t, uint16_t>> tmp = {
+      {0, 0},
+      {0, 1},
+      {1, 0},
+      {1, 1},
+  };
+
+  REQUIRE_THAT(n.get_neighbors(), Catch::Matchers::Equals(tmp));
 }

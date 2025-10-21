@@ -8,6 +8,7 @@
 #include <optional>
 #include <stdexcept>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 namespace qgraph {
@@ -87,6 +88,17 @@ public:
     }
 
     return std::nullopt;
+  };
+
+  auto get_neighbors() const {
+    // TODO: Improve this.
+    std::vector<std::pair<NodeId, SocketId>> v;
+    for (auto x : out_sockets_) {
+      for (auto y : x->get_neighbors()) {
+        v.push_back(y);
+      }
+    }
+    return v;
   };
 
   virtual void execute() {};

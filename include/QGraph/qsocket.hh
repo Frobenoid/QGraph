@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <memory>
 #include <optional>
 #include <set>
 #include <string>
@@ -62,10 +63,11 @@ namespace builder {
 
 template <typename T> class InSocketBuilder {
 private:
-  qgraph::InSocket<T> *socket_;
+  std::shared_ptr<qgraph::InSocket<T>> socket_;
 
 public:
-  InSocketBuilder(qgraph::InSocket<T> *socket) : socket_(socket) {};
+  InSocketBuilder(std::shared_ptr<qgraph::InSocket<T>> socket)
+      : socket_(socket) {};
 
   InSocketBuilder &with_default_value(T default_value) {
     socket_->set_default_value(default_value);
@@ -76,10 +78,11 @@ public:
 
 template <typename T> class OutSocketBuilder {
 private:
-  qgraph::OutSocket<T> *socket_;
+  std::shared_ptr<qgraph::OutSocket<T>> socket_;
 
 public:
-  OutSocketBuilder(qgraph::OutSocket<T> *socket) : socket_(socket) {};
+  OutSocketBuilder(std::shared_ptr<qgraph::OutSocket<T>> socket)
+      : socket_(socket) {};
 
   OutSocketBuilder &with_default_value(T default_value) {
     socket_->set_default_value(default_value);

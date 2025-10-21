@@ -1,8 +1,5 @@
-#ifndef QG_QGRAPH_HPP
-#define QG_QGRAPH_HPP
+#pragma once
 
 namespace qgraph {
 void testing();
 }
-
-#endif // DEBUG

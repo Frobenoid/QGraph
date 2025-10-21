@@ -7,7 +7,7 @@ PROPERTIES OUTPUT_NAME qgraph
 )
 
 target_compile_features(
-  libqgraph PUBLIC cxx_std_17
+  libqgraph PUBLIC cxx_std_20
 )
 
 target_include_directories(libqgraph

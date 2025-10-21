@@ -28,3 +28,21 @@ TEST_CASE("Change current value", "[socket]") {
   REQUIRE(n.get_input_socket<float>("A").value()->get_current_value() == 11.5);
   REQUIRE(n.get_input_socket<float>("A").value()->get_default_value() == 10.0);
 }
+
+TEST_CASE("Nodes", "[node]") {
+  qgraph::MathNode math;
+
+  math.execute();
+
+  auto t = math.get_output_socket<int>("C").value()->get_current_value();
+
+  REQUIRE(t == 2);
+
+  qgraph::IncrNode incr;
+
+  incr.execute();
+
+  auto f = incr.get_output_socket<int>("Value").value()->get_current_value();
+
+  REQUIRE(f == 11);
+}

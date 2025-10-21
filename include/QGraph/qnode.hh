@@ -88,5 +88,43 @@ public:
 
     return std::nullopt;
   };
+
+  virtual void execute() {};
+};
+
+class MathNode : public Node {
+public:
+  MathNode() {
+    add_input_socket<int>("A").with_default_value(1);
+    add_input_socket<int>("B").with_default_value(1);
+    add_output_socket<int>("C").with_default_value(2);
+  };
+
+  void execute() override {
+    auto a = get_input_socket<int>("A").value()->get_current_value();
+    auto b = get_input_socket<int>("B").value()->get_current_value();
+    get_output_socket<int>("C").value()->set_current_value(a + b);
+  };
+};
+
+class IncrNode : public Node {
+public:
+  IncrNode() {
+    add_input_socket<int>("Value").with_default_value(10);
+    add_input_socket<bool>("Condition").with_default_value(true);
+    add_output_socket<int>("Value").with_default_value(0);
+  };
+
+  void execute() override {
+    bool condition =
+        get_input_socket<bool>("Condition").value()->get_current_value();
+
+    int value = get_input_socket<int>("Value").value()->get_current_value();
+    auto out = get_output_socket<int>("Value").value();
+
+    if (condition) {
+      out->set_current_value(value + 1);
+    }
+  };
 };
 } // namespace qgraph

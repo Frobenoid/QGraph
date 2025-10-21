@@ -60,7 +60,8 @@ public:
       out_sockets_labels_.insert({label, new_socket->id});
       return builder::OutSocketBuilder<T>(new_socket);
     } else {
-      throw std::runtime_error("Outsocket with name ... already exists");
+      throw std::runtime_error("Input socket with name <" + label +
+                               "> already exists");
     }
   };
 

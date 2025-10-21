@@ -95,7 +95,7 @@ public:
       ptr->set_current_value(default_value);
       return *this;
     } else {
-      throw std::runtime_error("Input socket reference is expired");
+      throw std::runtime_error("Ouput socket reference is expired");
     }
   }
 };

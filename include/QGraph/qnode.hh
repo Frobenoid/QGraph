@@ -3,6 +3,7 @@
 #include <QGraph/qsocket.hh>
 #include <cassert>
 #include <cstdint>
+#include <limits>
 #include <memory>
 #include <optional>
 #include <stdexcept>
@@ -22,6 +23,14 @@ public:
 
   template <typename T>
   builder::InSocketBuilder<T> add_input_socket(const std::string &label) {
+    if (label.empty()) {
+      throw std::invalid_argument("Socket label cannot be empty");
+    }
+
+    if (in_sockets_labels.size() >= std::numeric_limits<uint16_t>::max()) {
+      throw std::runtime_error("Maximum number of input sockets reached");
+    }
+
     if (!in_sockets_labels.contains(label)) {
       auto new_socket = std::make_shared<qgraph::InSocket<T>>(label);
       this->in_sockets.push_back(new_socket);
@@ -36,6 +45,14 @@ public:
 
   template <typename T>
   builder::OutSocketBuilder<T> add_output_socket(const std::string &label) {
+    if (label.empty()) {
+      throw std::invalid_argument("Socket label cannot be empty");
+    }
+
+    if (out_sockets_labels.size() >= std::numeric_limits<uint16_t>::max()) {
+      throw std::runtime_error("Maximum number of output sockets reached");
+    }
+
     if (!out_sockets_labels.contains(label)) {
       auto new_socket = std::make_shared<qgraph::OutSocket<T>>(label);
       this->out_sockets.push_back(new_socket);

@@ -27,14 +27,14 @@ public:
 
   InSocket(const std::string &label) : label(label) {};
 
-  T get_current_value() const { return this->current_value_; };
-  T get_default_value() const { return this->default_value_; };
+  T get_current_value() const { return current_value_; };
+  T get_default_value() const { return default_value_; };
 
-  void set_current_value(T to) { this->current_value_ = to; };
-  void set_default_value(T to) { this->default_value_ = to; };
+  void set_current_value(const T to) { current_value_ = to; };
+  void set_default_value(const T to) { default_value_ = to; };
 
-  void connect(uint16_t to_socket) { this->connected_to = to_socket; }
-  void disconnect() { this->connected_to.reset(); }
+  void connect(const uint16_t to_socket) { connected_to = to_socket; }
+  void disconnect() { connected_to.reset(); }
 };
 
 template <typename T> class OutSocket : public Socket {
@@ -53,11 +53,11 @@ public:
   T get_current_value() const { return current_value_; };
   T get_default_value() const { return default_value_; }
 
-  void set_current_value(T to) { this->current_value_ = to; };
-  void set_default_value(T to) { this->default_value_ = to; };
+  void set_current_value(const T to) { current_value_ = to; };
+  void set_default_value(const T to) { default_value_ = to; };
 
-  void connect(uint16_t to_socket) { this->connected_to.insert(to_socket); };
-  void disconnect(uint16_t from) { this->connected_to.erase(from); };
+  void connect(const uint16_t to_socket) { connected_to.insert(to_socket); };
+  void disconnect(const uint16_t from) { connected_to.erase(from); };
 };
 
 namespace builder {

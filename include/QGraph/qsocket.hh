@@ -4,6 +4,7 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <stdexcept>
 #include <string>
 
 namespace qgraph {
@@ -63,31 +64,39 @@ namespace builder {
 
 template <typename T> class InSocketBuilder {
 private:
-  std::shared_ptr<qgraph::InSocket<T>> socket_;
+  std::weak_ptr<qgraph::InSocket<T>> socket_;
 
 public:
   InSocketBuilder(std::shared_ptr<qgraph::InSocket<T>> socket)
       : socket_(socket) {};
 
   InSocketBuilder &with_default_value(T default_value) {
-    socket_->set_default_value(default_value);
-    socket_->set_current_value(default_value);
-    return *this;
+    if (auto ptr = socket_.lock()) {
+      ptr->set_default_value(default_value);
+      ptr->set_current_value(default_value);
+      return *this;
+    } else {
+      throw std::runtime_error("Input socket reference is expired");
+    }
   };
 };
 
 template <typename T> class OutSocketBuilder {
 private:
-  std::shared_ptr<qgraph::OutSocket<T>> socket_;
+  std::weak_ptr<qgraph::OutSocket<T>> socket_;
 
 public:
   OutSocketBuilder(std::shared_ptr<qgraph::OutSocket<T>> socket)
       : socket_(socket) {};
 
   OutSocketBuilder &with_default_value(T default_value) {
-    socket_->set_default_value(default_value);
-    socket_->set_current_value(default_value);
-    return *this;
+    if (auto ptr = socket_.lock()) {
+      ptr->set_default_value(default_value);
+      ptr->set_current_value(default_value);
+      return *this;
+    } else {
+      throw std::runtime_error("Input socket reference is expired");
+    }
   }
 };
 

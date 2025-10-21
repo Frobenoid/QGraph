@@ -21,7 +21,7 @@ public:
   Node() {};
 
   template <typename T>
-  builder::InSocketBuilder<T> add_input_socket(std::string label) {
+  builder::InSocketBuilder<T> add_input_socket(const std::string &label) {
     if (!in_sockets_labels.contains(label)) {
       auto new_socket = std::make_shared<qgraph::InSocket<T>>(label);
       this->in_sockets.push_back(new_socket);
@@ -35,7 +35,7 @@ public:
   };
 
   template <typename T>
-  builder::OutSocketBuilder<T> add_output_socket(std::string label) {
+  builder::OutSocketBuilder<T> add_output_socket(const std::string &label) {
     if (!out_sockets_labels.contains(label)) {
       auto new_socket = std::make_shared<qgraph::OutSocket<T>>(label);
       this->out_sockets.push_back(new_socket);
@@ -49,7 +49,7 @@ public:
 
   template <typename T>
   std::optional<std::shared_ptr<qgraph::InSocket<T>>>
-  get_input_socket(std::string label) {
+  get_input_socket(const std::string &label) {
     if (auto id = in_sockets_labels.find(label);
         id != in_sockets_labels.end()) {
       auto base_prt = this->in_sockets[id->second];
@@ -61,7 +61,7 @@ public:
 
   template <typename T>
   std::optional<std::shared_ptr<qgraph::OutSocket<T>>>
-  get_output_socket(std::string label) {
+  get_output_socket(const std::string &label) {
     if (auto id = out_sockets_labels.find(label);
         id != out_sockets_labels.end()) {
       auto base_ptr = this->out_sockets[id->second];

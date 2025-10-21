@@ -6,8 +6,12 @@
 #include <set>
 #include <stdexcept>
 #include <string>
+#include <utility>
 
 namespace qgraph {
+
+using NodeId = uint16_t;
+using SocketId = uint16_t;
 
 class Socket {
 public:
@@ -22,7 +26,7 @@ private:
 public:
   // Index in parent node input sockets.
   uint16_t id;
-  std::optional<uint16_t> connected_to;
+  std::optional<std::pair<qgraph::NodeId, qgraph::SocketId>> connected_to;
   std::string label;
 
   InSocket(const std::string &label) : label(label) {};
@@ -33,8 +37,14 @@ public:
   void set_current_value(const T to) { current_value_ = to; };
   void set_default_value(const T to) { default_value_ = to; };
 
-  void connect(const uint16_t to_socket) { connected_to = to_socket; }
-  void disconnect() { connected_to.reset(); }
+  // TODO: Implement validation:
+  // 1. Node exists in parent tree?
+  // 2. Node contains input socket at index?
+  void connect(const uint16_t to_node, const uint16_t at_socket) {
+    connected_to = std::pair(to_node, at_socket);
+  };
+
+  void disconnect() { connected_to.reset(); };
 };
 
 template <typename T> class OutSocket : public Socket {
@@ -45,7 +55,7 @@ private:
 public:
   // Index inside parent node output sockets.
   uint16_t id;
-  std::set<uint16_t> connected_to;
+  std::set<std::pair<qgraph::NodeId, qgraph::SocketId>> connected_to;
   std::string label;
 
   OutSocket(const std::string &label) : label(label) {};
@@ -56,8 +66,17 @@ public:
   void set_current_value(const T to) { current_value_ = to; };
   void set_default_value(const T to) { default_value_ = to; };
 
-  void connect(const uint16_t to_socket) { connected_to.insert(to_socket); };
-  void disconnect(const uint16_t from) { connected_to.erase(from); };
+  // TODO: Implement validation
+  // 1. Node exists in parent tree?
+  // 2. Node contains input socket at index?
+  void connect(const uint16_t to_node, const uint16_t at_socket) {
+    connected_to.insert(std::pair(to_node, at_socket));
+  };
+
+  // TODO: Implement validation
+  void disconnect(const uint16_t to_node, const uint16_t at_socket) {
+    connected_to.erase(std::pair(to_node, at_socket));
+  };
 };
 
 namespace builder {

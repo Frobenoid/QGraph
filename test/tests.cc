@@ -2,6 +2,7 @@
 #include <QGraph/qsocket.hh>
 #include <catch2/catch_test_macros.hpp>
 #include <string_view>
+#include <utility>
 
 TEST_CASE("Socket builder", "[socket]") {
   qgraph::Node n;
@@ -45,4 +46,23 @@ TEST_CASE("Nodes", "[node]") {
   auto f = incr.get_output_socket<int>("Value").value()->get_current_value();
 
   REQUIRE(f == 11);
+}
+
+TEST_CASE("Socket connection", "[socket, connection]") {
+  qgraph::InSocket<int> a("a");
+
+  a.connect(0, 0);
+
+  REQUIRE(a.connected_to->first == 0);
+  REQUIRE(a.connected_to->second == 0);
+
+  qgraph::OutSocket<int> b("b");
+
+  b.connect(0, 0);
+
+  REQUIRE(b.connected_to.contains(std::pair(0, 0)));
+
+  b.disconnect(0, 0);
+
+  REQUIRE_FALSE(b.connected_to.contains(std::pair(0, 0)));
 }

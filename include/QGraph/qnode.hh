@@ -72,7 +72,7 @@ public:
     if (auto id = in_sockets_labels_.find(label);
         id != in_sockets_labels_.end()) {
       auto base_prt = this->in_sockets_[id->second];
-      return std::dynamic_pointer_cast<qgraph::InSocket<T>>(base_prt);
+      return std::static_pointer_cast<qgraph::InSocket<T>>(base_prt);
     }
 
     return std::nullopt;
@@ -84,7 +84,7 @@ public:
     if (auto id = out_sockets_labels_.find(label);
         id != out_sockets_labels_.end()) {
       auto base_ptr = this->out_sockets_[id->second];
-      return std::dynamic_pointer_cast<qgraph::OutSocket<T>>(base_ptr);
+      return std::static_pointer_cast<qgraph::OutSocket<T>>(base_ptr);
     }
 
     return std::nullopt;

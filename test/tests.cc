@@ -1,3 +1,4 @@
+#include "QGraph/qgraph.hh"
 #include <QGraph/qnode.hh>
 #include <QGraph/qsocket.hh>
 #include <catch2/catch_test_macros.hpp>
@@ -95,4 +96,18 @@ TEST_CASE("Get neighbors", "[socket, connection]") {
   };
 
   REQUIRE_THAT(n.get_neighbors(), Catch::Matchers::Equals(tmp));
+}
+
+TEST_CASE("Tree construction", "[tree, node]") {
+  qgraph::Graph g;
+
+  g.add_node<qgraph::IncrNode>();
+
+  REQUIRE(g.nodes.size() == 1);
+
+  // Sockes can be retrived from the tree level!!!!
+  REQUIRE(g.nodes[0]
+              ->get_output_socket<int>("Value")
+              .value()
+              ->get_default_value() == 0);
 }

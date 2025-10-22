@@ -28,7 +28,7 @@ private:
 
 public:
   // Index in parent node input sockets.
-  uint16_t id;
+  qgraph::SocketId id;
   std::optional<std::pair<qgraph::NodeId, qgraph::SocketId>> connected_to;
   std::string label;
 
@@ -43,7 +43,7 @@ public:
   // TODO: Implement validation:
   // 1. Node exists in parent tree?
   // 2. Node contains input socket at index?
-  void connect(const uint16_t to_node, const uint16_t at_socket) {
+  void connect(const qgraph::NodeId to_node, const qgraph::SocketId at_socket) {
     connected_to = std::pair(to_node, at_socket);
   };
 
@@ -57,7 +57,7 @@ private:
 
 public:
   // Index inside parent node output sockets.
-  uint16_t id;
+  qgraph::SocketId id;
   std::set<std::pair<qgraph::NodeId, qgraph::SocketId>> connected_to;
   std::string label;
 
@@ -72,7 +72,7 @@ public:
   // TODO: Implement validation
   // 1. Node exists in parent tree?
   // 2. Node contains input socket at index?
-  void connect(const uint16_t to_node, const uint16_t at_socket) {
+  void connect(const qgraph::NodeId to_node, const qgraph::SocketId at_socket) {
     connected_to.insert(std::pair(to_node, at_socket));
   };
 

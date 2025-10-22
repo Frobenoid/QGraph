@@ -101,13 +101,37 @@ TEST_CASE("Get neighbors", "[socket, connection]") {
 TEST_CASE("Tree construction", "[tree, node]") {
   qgraph::Graph g;
 
-  g.add_node<qgraph::IncrNode>();
+  SECTION("Node addition and retrieval") {
+    g.add_node<qgraph::IncrNode>();
 
-  REQUIRE(g.nodes.size() == 1);
+    REQUIRE(g.nodes.size() == 1);
 
-  // Sockes can be retrived from the tree level!!!!
-  REQUIRE(g.nodes[0]
-              ->get_output_socket<int>("Value")
-              .value()
-              ->get_default_value() == 0);
+    REQUIRE(g.get_node(0)
+                ->get_output_socket<int>("Value")
+                .value()
+                ->get_default_value() == 0);
+  }
+
+  SECTION("Node deletion") {
+    g.add_node<qgraph::IncrNode>();
+
+    g.delete_node(0);
+
+    REQUIRE(g.nodes.size() == 0);
+  }
+
+  SECTION("Node connection") {
+    g.add_node<qgraph::MathNode>();
+    g.add_node<qgraph::MathNode>();
+
+    g.connect<int>(0, "C", 1, "A");
+
+    auto source =
+        g.get_node(0)->get_output_socket<int>("C").value()->connected_to;
+    auto dest = g.get_node(1)->get_input_socket<int>("A").value()->connected_to;
+
+    REQUIRE(source.size() == 1);
+    REQUIRE(dest.has_value());
+    REQUIRE(dest.value() == std::pair(0, 0));
+  }
 }

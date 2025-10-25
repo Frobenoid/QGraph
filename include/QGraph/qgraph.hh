@@ -32,6 +32,20 @@ public:
     b->connect(from_node, a->id);
   };
 
+  template <typename F>
+  void connect(NodeId from_node, const SocketId at_out_socket, NodeId to_node,
+               const SocketId at_in_socket) {
+
+    std::shared_ptr<qgraph::OutSocket<F>> a =
+        get_node(from_node)->get_output_socket<F>(at_out_socket).value();
+
+    std::shared_ptr<qgraph::InSocket<F>> b =
+        get_node(to_node)->get_input_socket<F>(at_in_socket).value();
+
+    a->connect(to_node, b->id);
+    b->connect(from_node, a->id);
+  };
+
   void delete_node(qgraph::NodeId id) { nodes.erase(nodes.begin() + id); };
 
   std::shared_ptr<qgraph::Node> get_node(qgraph::NodeId id) {

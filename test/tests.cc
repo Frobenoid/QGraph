@@ -124,7 +124,8 @@ TEST_CASE("Tree construction", "[tree, node]") {
     g.add_node<qgraph::MathNode>();
     g.add_node<qgraph::MathNode>();
 
-    g.connect<int>(0, "C", 1, "A");
+    g.connect<int>(0, qgraph::MathNode::Socket::C, 1,
+                   qgraph::MathNode::Socket::A);
 
     auto source =
         g.get_node(0)->get_output_socket<int>("C").value()->connected_to;

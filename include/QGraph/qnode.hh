@@ -79,6 +79,15 @@ public:
   };
 
   template <typename T>
+  std::optional<std::shared_ptr<InSocket<T>>>
+  get_input_socket(const SocketId id) {
+    if (id < in_sockets_.size()) {
+      return std::static_pointer_cast<InSocket<T>>(in_sockets_[id]);
+    };
+    return std::nullopt;
+  };
+
+  template <typename T>
   std::optional<std::shared_ptr<qgraph::OutSocket<T>>>
   get_output_socket(const std::string &label) {
     if (auto id = out_sockets_labels_.find(label);
@@ -87,6 +96,15 @@ public:
       return std::static_pointer_cast<qgraph::OutSocket<T>>(base_ptr);
     }
 
+    return std::nullopt;
+  };
+
+  template <typename T>
+  std::optional<std::shared_ptr<OutSocket<T>>>
+  get_output_socket(const SocketId id) {
+    if (id < out_sockets_.size()) {
+      return std::static_pointer_cast<OutSocket<T>>(out_sockets_[id]);
+    };
     return std::nullopt;
   };
 
@@ -106,6 +124,14 @@ public:
 
 class MathNode : public Node {
 public:
+  enum Socket {
+    // Input sockets
+    A = 0,
+    B = 1,
+    // Output sockets
+    C = 0
+  };
+
   MathNode() {
     add_input_socket<int>("A").with_default_value(1);
     add_input_socket<int>("B").with_default_value(1);

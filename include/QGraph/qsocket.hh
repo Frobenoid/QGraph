@@ -1,6 +1,7 @@
 #pragma once
 
-#include "QGraph/qtypes.hh"
+#include <QGraph/qlink.hh>
+#include <QGraph/qtypes.hh>
 #include <cstdint>
 #include <memory>
 #include <optional>
@@ -9,28 +10,6 @@
 #include <string>
 
 namespace qgraph {
-
-using NodeId = uint16_t;
-using SocketId = uint16_t;
-
-class Link {
-public:
-  SocketId source_socket;
-  NodeId destination_node;
-  SocketId destination_socket;
-
-  bool operator<(const Link &rhs) const {
-    return source_socket < rhs.source_socket &&
-           destination_node < rhs.destination_node &&
-           destination_socket < rhs.destination_socket;
-  }
-
-  bool operator==(const Link &rhs) const {
-    return source_socket == rhs.source_socket &&
-           destination_node == rhs.destination_node &&
-           destination_socket == rhs.destination_socket;
-  }
-};
 
 class Socket {
 public:
@@ -48,7 +27,7 @@ private:
 
 public:
   // Index in parent node input sockets.
-  qgraph::SocketId id;
+  SocketId id;
   std::optional<Link> connected_to;
   std::string label;
 

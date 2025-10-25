@@ -74,19 +74,30 @@ public:
       // TODO: USE MACROS TO GENERATE SWITCH CASES.
       switch (source_node->get_type_of_output_socket(src_socket)) {
       case INT: {
-        int src_value = source_node->get_output_socket<int>(src_socket)
-                            .value()
-                            ->get_current_value();
-        dst_node->get_input_socket<int>(dest_socket)
-            .value()
-            ->set_current_value(src_value);
+        PROPAGATE(int);
       }
       case BOOL:
-        break;
+        dst_node->get_input_socket<bool>(dest_socket)
+            .value()
+            ->set_current_value(source_node->get_output_socket<bool>(src_socket)
+                                    .value()
+                                    ->get_current_value());
       case STRING:
-        break;
+        dst_node->get_input_socket<std::string>(dest_socket)
+            .value()
+            ->set_current_value(
+                source_node->get_output_socket<std::string>(src_socket)
+                    .value()
+                    ->get_current_value());
       }
     }
   };
 };
 }; // namespace qgraph
+
+#define PROPAGATE(TypeName)                                                    \
+  dst_node->get_input_socket<TypeName>(dest_socket)                            \
+      .value()                                                                 \
+      ->set_current_value(source_node->get_output_socket<TypeName>(src_socket) \
+                              .value()                                         \
+                              ->get_current_value())

@@ -31,6 +31,7 @@ private:
   void dfs() {
     uint16_t time = 0;
     // TODO: Is it cheaper to use indices?
+    // Profile this and make a decision.
     for (auto node : graph_.nodes) {
       if (!visited_.contains(node->id)) {
         dfs_visit(node->id, time);

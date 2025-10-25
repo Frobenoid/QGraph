@@ -125,8 +125,8 @@ TEST_CASE("Tree construction", "[tree, node]") {
     g.add_node<qgraph::MathNode>();
     g.add_node<qgraph::MathNode>();
 
-    g.connect<int>(0, qgraph::MathNode::Socket::C, 1,
-                   qgraph::MathNode::Socket::A);
+    g.connect<int>(0, qgraph::MathNode::Socket::RESULT, 1,
+                   qgraph::MathNode::Socket::LHS);
 
     auto source =
         g.get_node(0)->get_output_socket<int>("C").value()->connected_to;
@@ -139,34 +139,29 @@ TEST_CASE("Tree construction", "[tree, node]") {
 }
 
 TEST_CASE("Tree evaluation", "[tree, evaluation]") {
-  // (1 + (1 + 1))
+  // (1 + (1 + (1+ 1)))
 
   qgraph::Graph g;
   g.add_node<qgraph::MathNode>();
   g.add_node<qgraph::MathNode>();
+  g.add_node<qgraph::MathNode>();
 
-  g.connect<int>(0, qgraph::MathNode::Socket::C, 1,
-                 qgraph::MathNode::Socket::B);
+  g.connect<int>(0, qgraph::MathNode::Socket::RESULT, 1,
+                 qgraph::MathNode::Socket::RHS);
+  g.connect<int>(1, qgraph::MathNode::Socket::RESULT, 2,
+                 qgraph::MathNode::Socket::RHS);
+
+  REQUIRE(g.nodes.size() == 3);
 
   qgraph::Evaluator eval(g);
-
   eval.evaluate();
-
-  // TODO: Is is better to have a nested class?
-  // qgraph::Graph::Evaluator eval(g);
-
-  // TODO: Should we have both out and in utility functions?
-  // int res =
-  //     g.get_current_output_value<int>(1,
-  //     qgraph::MathNode::Socket::C).value();
-  //
 
   auto order = eval.get_execution_order();
 
   REQUIRE(order[0] == 0);
   REQUIRE(order[1] == 1);
+  REQUIRE(order[2] == 2);
 
-  REQUIRE(
-      g.get_current_output_value<int>(1, qgraph::MathNode::Socket::C).value() ==
-      3);
+  REQUIRE(g.get_current_output_value<int>(2, qgraph::MathNode::Socket::RESULT)
+              .value() == 4);
 }

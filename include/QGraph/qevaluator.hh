@@ -61,7 +61,8 @@ public:
   void evaluate() {
     verify_integrity();
 
-    // Execute the nodes.
+    // Execute nodes.
+    // LOOP INVARIANT: Inputs are ready to be used.
     for (auto node_id : execution_order_) {
       // Execute node.
       graph_.nodes[node_id]->execute();

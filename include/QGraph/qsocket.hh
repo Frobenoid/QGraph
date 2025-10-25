@@ -1,5 +1,6 @@
 #pragma once
 
+#include "QGraph/qtypes.hh"
 #include <cstdint>
 #include <memory>
 #include <optional>
@@ -13,8 +14,19 @@ namespace qgraph {
 using NodeId = uint16_t;
 using SocketId = uint16_t;
 
+class Link {
+public:
+  NodeId source_node;
+  SocketId source_socket;
+  NodeId destination_node;
+  SocketId destination_socket;
+};
+
 class Socket {
 public:
+  AssociatedType type;
+
+  SocketId id;
   virtual ~Socket() = default;
   virtual std::set<std::pair<NodeId, SocketId>> get_neighbors() const {
     return {};
@@ -23,12 +35,10 @@ public:
 
 template <typename T> class InSocket : public Socket {
 private:
-  // T default_value_;
-  // T current_value_;
-
-public:
   T default_value_;
   T current_value_;
+
+public:
   // Index in parent node input sockets.
   qgraph::SocketId id;
   std::optional<std::pair<qgraph::NodeId, qgraph::SocketId>> connected_to;
@@ -54,12 +64,10 @@ public:
 
 template <typename T> class OutSocket : public Socket {
 private:
-  // T default_value_;
-  // T current_value_;
-
-public:
   T default_value_;
   T current_value_;
+
+public:
   // Index inside parent node output sockets.
   qgraph::SocketId id;
   std::set<std::pair<qgraph::NodeId, qgraph::SocketId>> connected_to;

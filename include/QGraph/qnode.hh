@@ -23,7 +23,7 @@ public:
   std::vector<std::shared_ptr<qgraph::Socket>> in_sockets_;
   std::vector<std::shared_ptr<qgraph::Socket>> out_sockets_;
   Node() {};
-  /// Index in parent tree.
+  /// Index in parent graph.
   NodeId id;
 
   template <typename T>
@@ -117,10 +117,18 @@ public:
     std::vector<std::tuple<SocketId, NodeId, SocketId>> v;
     for (auto x : out_sockets_) {
       for (auto y : x->get_neighbors()) {
-        v.push_back(std::tuple(id, y.first, y.second));
+        v.push_back(std::tuple(x->id, y.first, y.second));
       }
     }
     return v;
+  };
+
+  AssociatedType get_type_of_output_socket(SocketId socket_id) {
+    if (socket_id < this->out_sockets_.size()) {
+      return out_sockets_[socket_id]->type;
+    } else {
+      throw std::runtime_error(&"NOPE: "[socket_id]);
+    }
   };
 
   virtual void execute() {};
@@ -130,10 +138,10 @@ class MathNode : public Node {
 public:
   enum Socket {
     // Input sockets
-    A = 0,
-    B = 1,
+    LHS = 0,
+    RHS = 1,
     // Output sockets
-    C = 0
+    RESULT = 0
   };
 
   MathNode() {

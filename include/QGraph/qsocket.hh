@@ -7,7 +7,6 @@
 #include <set>
 #include <stdexcept>
 #include <string>
-#include <utility>
 
 namespace qgraph {
 
@@ -16,10 +15,21 @@ using SocketId = uint16_t;
 
 class Link {
 public:
-  NodeId source_node;
   SocketId source_socket;
   NodeId destination_node;
   SocketId destination_socket;
+
+  bool operator<(const Link &rhs) const {
+    return source_socket < rhs.source_socket &&
+           destination_node < rhs.destination_node &&
+           destination_socket < rhs.destination_socket;
+  }
+
+  bool operator==(const Link &rhs) const {
+    return source_socket == rhs.source_socket &&
+           destination_node == rhs.destination_node &&
+           destination_socket == rhs.destination_socket;
+  }
 };
 
 class Socket {
@@ -28,9 +38,7 @@ public:
 
   SocketId id;
   virtual ~Socket() = default;
-  virtual std::set<std::pair<NodeId, SocketId>> get_neighbors() const {
-    return {};
-  };
+  virtual std::set<Link> get_neighbors() const { return {}; };
 };
 
 template <typename T> class InSocket : public Socket {
@@ -41,7 +49,7 @@ private:
 public:
   // Index in parent node input sockets.
   qgraph::SocketId id;
-  std::optional<std::pair<qgraph::NodeId, qgraph::SocketId>> connected_to;
+  std::optional<Link> connected_to;
   std::string label;
 
   InSocket(const std::string &label) : label(label) {};
@@ -56,7 +64,7 @@ public:
   // 1. Node exists in parent tree?
   // 2. Node contains input socket at index?
   void connect(const qgraph::NodeId to_node, const qgraph::SocketId at_socket) {
-    connected_to = std::pair(to_node, at_socket);
+    connected_to = Link{id, to_node, at_socket};
   };
 
   void disconnect() { connected_to.reset(); };
@@ -70,7 +78,7 @@ private:
 public:
   // Index inside parent node output sockets.
   qgraph::SocketId id;
-  std::set<std::pair<qgraph::NodeId, qgraph::SocketId>> connected_to;
+  std::set<Link> connected_to;
   std::string label;
 
   OutSocket(const std::string &label) : label(label) {};
@@ -85,17 +93,15 @@ public:
   // 1. Node exists in parent tree?
   // 2. Node contains input socket at index?
   void connect(const qgraph::NodeId to_node, const qgraph::SocketId at_socket) {
-    connected_to.insert(std::pair(to_node, at_socket));
+    connected_to.emplace(id, to_node, at_socket);
   };
 
   // TODO: Implement validation
   void disconnect(const uint16_t to_node, const uint16_t at_socket) {
-    connected_to.erase(std::pair(to_node, at_socket));
+    connected_to.erase({id, to_node, at_socket});
   };
 
-  std::set<std::pair<NodeId, SocketId>> get_neighbors() const override {
-    return this->connected_to;
-  }
+  std::set<Link> get_neighbors() const override { return this->connected_to; }
 };
 
 namespace builder {

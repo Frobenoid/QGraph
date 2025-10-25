@@ -8,20 +8,17 @@
 #include <optional>
 #include <stdexcept>
 #include <unordered_map>
-#include <utility>
 #include <vector>
 
 namespace qgraph {
 class Node {
 private:
   std::unordered_map<std::string, std::uint16_t> in_sockets_labels_;
-  // std::vector<std::shared_ptr<qgraph::Socket>> in_sockets_;
   std::unordered_map<std::string, std::uint16_t> out_sockets_labels_;
-  // std::vector<std::shared_ptr<qgraph::Socket>> out_sockets_;
-
-public:
   std::vector<std::shared_ptr<qgraph::Socket>> in_sockets_;
   std::vector<std::shared_ptr<qgraph::Socket>> out_sockets_;
+
+public:
   Node() {};
   /// Index in parent graph.
   NodeId id;
@@ -114,10 +111,10 @@ public:
 
   auto get_neighbors() const {
     // TODO: Improve this.
-    std::vector<std::tuple<SocketId, NodeId, SocketId>> v;
+    std::vector<Link> v;
     for (auto x : out_sockets_) {
       for (auto y : x->get_neighbors()) {
-        v.push_back(std::tuple(x->id, y.first, y.second));
+        v.push_back(y);
       }
     }
     return v;

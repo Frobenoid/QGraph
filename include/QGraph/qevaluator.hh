@@ -3,7 +3,6 @@
 #include <QGraph/qgraph.hh>
 #include <cstdint>
 #include <deque>
-#include <iostream>
 
 namespace qgraph {
 class Evaluator {
@@ -44,9 +43,9 @@ private:
 
     visited_.insert(node);
 
-    for (auto [_, next_node, _] : graph_.get_node(node)->get_neighbors()) {
+    for (auto link : graph_.get_node(node)->get_neighbors()) {
       if (!visited_.contains(node)) {
-        dfs_visit(next_node, time);
+        dfs_visit(link.destination_node, time);
       }
     }
 

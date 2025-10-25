@@ -2,6 +2,7 @@
 
 #include "QGraph/qnode.hh"
 #include "QGraph/qsocket.hh"
+#include "QGraph/qtypes.hh"
 #include <memory>
 #include <optional>
 #include <type_traits>
@@ -66,6 +67,25 @@ public:
   void propagate_values(NodeId for_node) const {
     for (auto [src_socket, dest_node, dest_socket] :
          nodes[for_node]->get_neighbors()) {
+
+      auto source_node = get_node(for_node);
+      auto dst_node = get_node(dest_node);
+
+      // TODO: USE MACROS TO GENERATE SWITCH CASES.
+      switch (source_node->get_type_of_output_socket(src_socket)) {
+      case INT: {
+        int src_value = source_node->get_output_socket<int>(src_socket)
+                            .value()
+                            ->get_current_value();
+        dst_node->get_input_socket<int>(dest_socket)
+            .value()
+            ->set_current_value(src_value);
+      }
+      case BOOL:
+        break;
+      case STRING:
+        break;
+      }
     }
   };
 };

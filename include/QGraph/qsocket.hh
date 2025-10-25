@@ -23,10 +23,12 @@ public:
 
 template <typename T> class InSocket : public Socket {
 private:
-  T default_value_;
-  T current_value_;
+  // T default_value_;
+  // T current_value_;
 
 public:
+  T default_value_;
+  T current_value_;
   // Index in parent node input sockets.
   qgraph::SocketId id;
   std::optional<std::pair<qgraph::NodeId, qgraph::SocketId>> connected_to;
@@ -52,10 +54,12 @@ public:
 
 template <typename T> class OutSocket : public Socket {
 private:
-  T default_value_;
-  T current_value_;
+  // T default_value_;
+  // T current_value_;
 
 public:
+  T default_value_;
+  T current_value_;
   // Index inside parent node output sockets.
   qgraph::SocketId id;
   std::set<std::pair<qgraph::NodeId, qgraph::SocketId>> connected_to;

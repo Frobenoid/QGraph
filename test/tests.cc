@@ -1,3 +1,4 @@
+#include "QGraph/qevaluator.hh"
 #include "QGraph/qgraph.hh"
 #include <QGraph/qnode.hh>
 #include <QGraph/qsocket.hh>
@@ -88,11 +89,11 @@ TEST_CASE("Get neighbors", "[socket, connection]") {
 
   REQUIRE(n.get_neighbors().size() == 4);
 
-  std::vector<std::pair<uint16_t, uint16_t>> tmp = {
-      {0, 0},
-      {0, 1},
-      {1, 0},
-      {1, 1},
+  std::vector<std::tuple<uint16_t, uint16_t, uint16_t>> tmp = {
+      {0, 0, 0},
+      {0, 0, 1},
+      {0, 1, 0},
+      {0, 1, 1},
   };
 
   REQUIRE_THAT(n.get_neighbors(), Catch::Matchers::Equals(tmp));
@@ -135,4 +136,37 @@ TEST_CASE("Tree construction", "[tree, node]") {
     REQUIRE(dest.has_value());
     REQUIRE(dest.value() == std::pair(0, 0));
   }
+}
+
+TEST_CASE("Tree evaluation", "[tree, evaluation]") {
+  // (1 + (1 + 1))
+
+  qgraph::Graph g;
+  g.add_node<qgraph::MathNode>();
+  g.add_node<qgraph::MathNode>();
+
+  g.connect<int>(0, qgraph::MathNode::Socket::C, 1,
+                 qgraph::MathNode::Socket::B);
+
+  qgraph::Evaluator eval(g);
+
+  eval.evaluate();
+
+  // TODO: Is is better to have a nested class?
+  // qgraph::Graph::Evaluator eval(g);
+
+  // TODO: Should we have both out and in utility functions?
+  // int res =
+  //     g.get_current_output_value<int>(1,
+  //     qgraph::MathNode::Socket::C).value();
+  //
+
+  auto order = eval.get_execution_order();
+
+  REQUIRE(order[0] == 0);
+  REQUIRE(order[1] == 1);
+
+  REQUIRE(
+      g.get_current_output_value<int>(1, qgraph::MathNode::Socket::C).value() ==
+      3);
 }

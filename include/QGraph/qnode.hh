@@ -15,12 +15,16 @@ namespace qgraph {
 class Node {
 private:
   std::unordered_map<std::string, std::uint16_t> in_sockets_labels_;
-  std::vector<std::shared_ptr<qgraph::Socket>> in_sockets_;
+  // std::vector<std::shared_ptr<qgraph::Socket>> in_sockets_;
   std::unordered_map<std::string, std::uint16_t> out_sockets_labels_;
-  std::vector<std::shared_ptr<qgraph::Socket>> out_sockets_;
+  // std::vector<std::shared_ptr<qgraph::Socket>> out_sockets_;
 
 public:
+  std::vector<std::shared_ptr<qgraph::Socket>> in_sockets_;
+  std::vector<std::shared_ptr<qgraph::Socket>> out_sockets_;
   Node() {};
+  /// Index in parent tree.
+  NodeId id;
 
   template <typename T>
   builder::InSocketBuilder<T> add_input_socket(const std::string &label) {
@@ -110,10 +114,10 @@ public:
 
   auto get_neighbors() const {
     // TODO: Improve this.
-    std::vector<std::pair<NodeId, SocketId>> v;
+    std::vector<std::tuple<SocketId, NodeId, SocketId>> v;
     for (auto x : out_sockets_) {
       for (auto y : x->get_neighbors()) {
-        v.push_back(y);
+        v.push_back(std::tuple(id, y.first, y.second));
       }
     }
     return v;
@@ -135,7 +139,7 @@ public:
   MathNode() {
     add_input_socket<int>("A").with_default_value(1);
     add_input_socket<int>("B").with_default_value(1);
-    add_output_socket<int>("C").with_default_value(2);
+    add_output_socket<int>("C").with_default_value(0);
   };
 
   void execute() override {

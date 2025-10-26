@@ -71,10 +71,13 @@ public:
       auto source_node = get_node(for_node);
       auto dst_node = get_node(dest_node);
 
-      // TODO: USE MACROS TO GENERATE SWITCH CASES.
       switch (source_node->get_type_of_output_socket(src_socket)) {
       case INT: {
-        PROPAGATE(int);
+        dst_node->get_input_socket<int>(dest_socket)
+            .value()
+            ->set_current_value(source_node->get_output_socket<int>(src_socket)
+                                    .value()
+                                    ->get_current_value());
       }
       case BOOL:
         dst_node->get_input_socket<bool>(dest_socket)
@@ -94,10 +97,3 @@ public:
   };
 };
 }; // namespace qgraph
-
-#define PROPAGATE(TypeName)                                                    \
-  dst_node->get_input_socket<TypeName>(dest_socket)                            \
-      .value()                                                                 \
-      ->set_current_value(source_node->get_output_socket<TypeName>(src_socket) \
-                              .value()                                         \
-                              ->get_current_value())

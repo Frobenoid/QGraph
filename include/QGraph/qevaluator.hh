@@ -2,14 +2,13 @@
 
 #include <QGraph/qgraph.hh>
 #include <cstdint>
-#include <deque>
+#include <vector>
 
 namespace qgraph {
 class Evaluator {
 private:
   Graph &graph_;
-  // FIX: Use a vec for contiguous memory access.
-  std::deque<NodeId> execution_order_;
+  std::vector<NodeId> execution_order_;
   std::set<NodeId> visited_;
 
   /// This function checks if there is

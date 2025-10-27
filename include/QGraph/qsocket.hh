@@ -2,7 +2,9 @@
 
 #include <QGraph/qlink.hh>
 #include <QGraph/qtypes.hh>
+#include <any>
 #include <cstdint>
+#include <iostream>
 #include <memory>
 #include <optional>
 #include <set>
@@ -18,6 +20,8 @@ public:
   SocketId id;
   virtual ~Socket() = default;
   virtual std::set<Link> get_neighbors() const { return {}; };
+  virtual void set_current_value(const std::any to) {};
+  virtual std::any get_untyped_current_value() const { return std::any(0); };
 };
 
 template <typename T> class InSocket : public Socket {
@@ -36,8 +40,17 @@ public:
   T get_current_value() const { return current_value_; };
   T get_default_value() const { return default_value_; };
 
+  void set_current_value(const std::any to) override {
+    std::cout << "Setting current untyped value: " << to.has_value() << "\n";
+    std::cout << to.type().name() << " " << std::any_cast<T>(to) << "\n";
+    current_value_ = std::any_cast<T>(to);
+  };
+
   void set_current_value(const T to) { current_value_ = to; };
   void set_default_value(const T to) { default_value_ = to; };
+  void set_default_value(const std::any to) {
+    default_value_ = std::any_cast<T>(to);
+  };
 
   // TODO: Implement validation:
   // 1. Node exists in parent tree?
@@ -81,6 +94,14 @@ public:
   };
 
   std::set<Link> get_neighbors() const override { return this->connected_to; }
+
+  std::any get_untyped_current_value() const override {
+    return std::any(current_value_);
+  };
+
+  std::any get_untyped_default_value() const {
+    return std::any(default_value_);
+  };
 };
 
 namespace builder {

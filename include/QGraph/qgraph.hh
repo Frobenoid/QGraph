@@ -107,28 +107,11 @@ public:
       auto source_node = get_node(for_node);
       auto dst_node = get_node(dest_node);
 
-      switch (source_node->get_type_of_output_socket(src_socket)) {
-      case INT: {
-        dst_node->get_input_socket<int>(dest_socket)
-            .value()
-            ->set_current_value(source_node->get_output_socket<int>(src_socket)
-                                    .value()
-                                    ->get_current_value());
-      }
-      case BOOL:
-        dst_node->get_input_socket<bool>(dest_socket)
-            .value()
-            ->set_current_value(source_node->get_output_socket<bool>(src_socket)
-                                    .value()
-                                    ->get_current_value());
-      case STRING:
-        dst_node->get_input_socket<std::string>(dest_socket)
-            .value()
-            ->set_current_value(
-                source_node->get_output_socket<std::string>(src_socket)
-                    .value()
-                    ->get_current_value());
-      }
+      auto output_socket = source_node->out_sockets_[src_socket];
+      auto input_socket = dst_node->in_sockets_[dest_socket];
+
+      auto src_value = output_socket->get_untyped_current_value();
+      input_socket->set_current_value(src_value);
     }
   };
 };

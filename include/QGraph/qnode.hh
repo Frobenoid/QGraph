@@ -121,14 +121,6 @@ public:
     return v;
   };
 
-  AssociatedType get_type_of_output_socket(SocketId socket_id) {
-    if (socket_id < this->out_sockets_.size()) {
-      return out_sockets_[socket_id]->type;
-    } else {
-      throw std::runtime_error(&"NOPE: "[socket_id]);
-    }
-  };
-
   virtual void execute() {};
 };
 

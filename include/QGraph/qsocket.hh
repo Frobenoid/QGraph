@@ -14,8 +14,6 @@ namespace qgraph {
 
 class Socket {
 public:
-  AssociatedType type;
-
   SocketId id;
   virtual ~Socket() = default;
   virtual std::set<Link> get_neighbors() const { return {}; };

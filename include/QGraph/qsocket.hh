@@ -78,9 +78,6 @@ public:
   void set_current_value(const T to) { current_value_ = to; };
   void set_default_value(const T to) { default_value_ = to; };
 
-  // TODO: Implement validation
-  // 1. Node exists in parent tree?
-  // 2. Node contains input socket at index?
   void connect(const qgraph::NodeId to_node, const qgraph::SocketId at_socket) {
     connected_to.emplace(id, to_node, at_socket);
   };

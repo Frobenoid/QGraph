@@ -3,6 +3,7 @@
 #include "QGraph/qnode.hh"
 #include "QGraph/qsocket.hh"
 #include "QGraph/qtypes.hh"
+#include <cassert>
 #include <memory>
 #include <optional>
 #include <type_traits>
@@ -25,6 +26,9 @@ public:
   void connect(qgraph::NodeId from_node, const std::string &at_out_socket,
                qgraph::NodeId to_node, const std::string &at_in_socket) {
 
+    assert(from_node < nodes.size());
+    assert(to_node < nodes.size());
+
     std::shared_ptr<qgraph::OutSocket<F>> a =
         get_node(from_node)->get_output_socket<F>(at_out_socket).value();
 
@@ -39,14 +43,21 @@ public:
   void connect(NodeId from_node, const SocketId at_out_socket, NodeId to_node,
                const SocketId at_in_socket) {
 
-    std::shared_ptr<qgraph::OutSocket<F>> a =
-        get_node(from_node)->get_output_socket<F>(at_out_socket).value();
+    assert(from_node < nodes.size());
+    assert(to_node < nodes.size());
 
-    std::shared_ptr<qgraph::InSocket<F>> b =
-        get_node(to_node)->get_input_socket<F>(at_in_socket).value();
+    auto a = get_node(from_node);
+    auto a_socket = a->get_input_socket<F>(at_out_socket).value();
 
-    a->connect(to_node, b->id);
-    b->connect(from_node, a->id);
+    assert(at_out_socket < a->out_sockets_.size());
+
+    auto b = get_node(to_node);
+    auto b_socket = b->get_input_socket<F>(at_in_socket).value();
+
+    assert(at_in_socket < b->in_sockets_.size());
+
+    a_socket->connect(to_node, b_socket->id);
+    b_socket->connect(from_node, a_socket->id);
   };
 
   void delete_node(qgraph::NodeId id) { nodes.erase(nodes.begin() + id); };

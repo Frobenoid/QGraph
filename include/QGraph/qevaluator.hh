@@ -76,10 +76,11 @@ public:
     verify_integrity();
 
     if (is_valid_) {
-      for (auto i : execution_order_ | std::views::reverse) {
-        graph_.nodes[i]->execute();
-        graph_.propagate_values(i);
-      }
+      std::ranges::for_each(execution_order_ | std::views::reverse,
+                            [this](const auto node) {
+                              graph_.nodes[node]->execute();
+                              graph_.propagate_values(node);
+                            });
     } else {
       return;
     }

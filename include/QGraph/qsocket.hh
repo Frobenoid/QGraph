@@ -4,7 +4,6 @@
 #include <QGraph/qtypes.hh>
 #include <any>
 #include <cstdint>
-#include <iostream>
 #include <memory>
 #include <optional>
 #include <set>
@@ -41,8 +40,6 @@ public:
   T get_default_value() const { return default_value_; };
 
   void set_current_value(const std::any to) override {
-    std::cout << "Setting current untyped value: " << to.has_value() << "\n";
-    std::cout << to.type().name() << " " << std::any_cast<T>(to) << "\n";
     current_value_ = std::any_cast<T>(to);
   };
 

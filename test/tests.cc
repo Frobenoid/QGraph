@@ -169,13 +169,10 @@ TEST_CASE("Evaluation order", "[graph, evaluation]") {
 
   eval.evaluate();
 
-  // REQUIRE(g.get_current_output_value<int>(5,
-  // qgraph::MathNode::Socket::RESULT)
-  //             .value() == 30);
-  // REQUIRE(g.get_current_output_value<int>(6,
-  // qgraph::MathNode::Socket::RESULT)
-  //             .value() == 60);
-  // REQUIRE(g.get_current_output_value<int>(4,
-  // qgraph::MathNode::Socket::RESULT)
-  //             .value() == 100);
+  REQUIRE(g.get_current_output_value<int>(5, qgraph::MathNode::Socket::RESULT)
+              .value() == 30);
+  REQUIRE(g.get_current_output_value<int>(6, qgraph::MathNode::Socket::RESULT)
+              .value() == 60);
+  REQUIRE(g.get_current_output_value<int>(4, qgraph::MathNode::Socket::RESULT)
+              .value() == 100);
 }

@@ -6,6 +6,7 @@
 #include <cassert>
 #include <memory>
 #include <optional>
+#include <sys/types.h>
 #include <type_traits>
 #include <vector>
 
@@ -47,7 +48,7 @@ public:
     assert(to_node < nodes.size());
 
     auto a = get_node(from_node);
-    auto a_socket = a->get_input_socket<F>(at_out_socket).value();
+    auto a_socket = a->get_output_socket<F>(at_out_socket).value();
 
     assert(at_out_socket < a->out_sockets_.size());
 
@@ -65,6 +66,8 @@ public:
   std::shared_ptr<qgraph::Node> get_node(qgraph::NodeId id) const {
     return nodes[id];
   };
+
+  auto get_number_of_nodes() { return nodes.size(); }
 
   //
   // Socket access from graph.

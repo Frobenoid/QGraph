@@ -49,9 +49,6 @@ public:
     default_value_ = std::any_cast<T>(to);
   };
 
-  // TODO: Implement validation:
-  // 1. Node exists in parent tree?
-  // 2. Node contains input socket at index?
   void connect(const qgraph::NodeId to_node, const qgraph::SocketId at_socket) {
     connected_to = Link{id, to_node, at_socket};
   };
@@ -67,7 +64,9 @@ private:
 public:
   // Index inside parent node output sockets.
   qgraph::SocketId id;
+  // Set containing all input sockets this is connected to.
   std::set<Link> connected_to;
+  // Label of the node.
   std::string label;
 
   OutSocket(const std::string &label) : label(label) {};
@@ -82,7 +81,6 @@ public:
     connected_to.emplace(id, to_node, at_socket);
   };
 
-  // TODO: Implement validation
   void disconnect(const uint16_t to_node, const uint16_t at_socket) {
     connected_to.erase({id, to_node, at_socket});
   };

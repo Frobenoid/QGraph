@@ -1,14 +1,19 @@
 #pragma once
 
 #include <QGraph/qgraph.hh>
+#include <iostream>
 #include <vector>
 
 namespace qgraph {
 class Evaluator {
 private:
+  enum Color { WHITE = 0, GRAY = 1, BLACK = 2 };
+
   Graph &graph_;
   std::vector<NodeId> execution_order_;
   std::set<NodeId> visited_;
+  bool is_valid_ = true;
+  std::unordered_map<NodeId, Color> colors_;
 
   /// This function checks if there is
   /// a directed cycle in the current graph
@@ -17,36 +22,40 @@ private:
   /// This is done by topological sorting the
   /// graph. If at some point the sorting detects
   /// a directed cycle, this function throws.
-  void verify_integrity() {
-    // 1. Compute finish times for each node.
-    // 2. As each vertex is finished, it will
-    //    placed in the front of `execution_order`.
-    // 3. Return `execution_order`.
-    dfs();
-  };
+  void verify_integrity() { dfs(); };
 
   // Recursive depth firt search.
   void dfs() {
-    // TODO: Is it cheaper to use indices?
-    // Profile this and make a decision.
-    for (auto node : graph_.nodes) {
-      if (!visited_.contains(node->id)) {
-        dfs_visit(node->id);
+    for (int i = 0; i < graph_.get_number_of_nodes(); i++) {
+      colors_[i] = WHITE;
+    }
+
+    for (int i = 0; i < graph_.get_number_of_nodes(); i++) {
+      if (colors_[i] == WHITE) {
+        dfs_visit(i);
       }
     }
   };
 
   void dfs_visit(NodeId node) {
+    colors_[node] = GRAY;
+
     visited_.insert(node);
 
     for (auto link : graph_.get_node(node)->get_neighbors()) {
-      if (!visited_.contains(link.destination_node)) {
+      if (colors_[link.destination_node] == WHITE) {
         dfs_visit(link.destination_node);
+      } else if (colors_[link.destination_node] == GRAY) {
+        is_valid_ = false;
+        std::cerr
+            << "WARN: Provided graph is not valid. Contains a directed cycle\n";
+        return;
       }
     }
 
     // Finished exploring node.
     execution_order_.push_back(node);
+    colors_[node] = BLACK;
   };
 
 public:
@@ -55,16 +64,21 @@ public:
   auto get_execution_order() { return execution_order_; };
 
   void evaluate() {
+
     verify_integrity();
 
-    // Execute nodes.
-    // LOOP INVARIANT: Inputs are ready to be used.
-    for (int i = execution_order_.size() - 1; 0 <= i; i--) {
-      // Execute node.
-      graph_.nodes[execution_order_[i]]->execute();
-      // Propagate values.
-      graph_.propagate_values(execution_order_[i]);
+    if (is_valid_) {
+      for (int i = execution_order_.size() - 1; 0 <= i; i--) {
+        // Execute node.
+        graph_.nodes[execution_order_[i]]->execute();
+        // Propagate values.
+        graph_.propagate_values(execution_order_[i]);
+      }
+    } else {
+      return;
     }
   };
+
+  bool is_valid() { return is_valid_; }
 };
 } // namespace qgraph

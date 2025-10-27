@@ -127,6 +127,8 @@ TEST_CASE("Tree evaluation", "[graph, evaluation]") {
   qgraph::Evaluator eval(g);
   eval.evaluate();
 
+  REQUIRE(eval.is_valid());
+
   auto order = eval.get_execution_order();
 
   REQUIRE(g.get_current_output_value<int>(2, qgraph::MathNode::Socket::RESULT)
@@ -175,4 +177,23 @@ TEST_CASE("Evaluation order", "[graph, evaluation]") {
               .value() == 60);
   REQUIRE(g.get_current_output_value<int>(4, qgraph::MathNode::Socket::RESULT)
               .value() == 100);
+}
+
+TEST_CASE("Invalid graph", "[graph, validation]") {
+  qgraph::Graph g;
+
+  g.add_node<qgraph::MathNode>();
+  g.add_node<qgraph::MathNode>();
+
+  g.connect<int>(0, qgraph::MathNode::Socket::RESULT, 1,
+                 qgraph::MathNode::Socket::LHS);
+
+  g.connect<int>(1, qgraph::MathNode::Socket::RESULT, 0,
+                 qgraph::MathNode::Socket::LHS);
+
+  qgraph::Evaluator eval(g);
+
+  eval.evaluate();
+
+  REQUIRE_FALSE(eval.is_valid());
 }

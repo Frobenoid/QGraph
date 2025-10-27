@@ -19,6 +19,8 @@ class Graph {
 public:
   std::vector<std::shared_ptr<qgraph::Node>> nodes;
 
+  // TODO: It should be possible to initialize the class T
+  // in the same way `make_shared<T>(...args);` works.
   template <ConceptObject T> void add_node() {
     nodes.emplace_back(std::make_shared<T>());
     nodes.back()->id = nodes.size() - 1;
@@ -74,6 +76,8 @@ public:
   // Socket access from graph.
   //
 
+  // FIX: This should not be optional. If the socket does not
+  // exists then it should return an error.
   template <typename T>
   std::optional<T> get_current_output_value(NodeId for_node,
                                             SocketId at_socket) const {
@@ -83,6 +87,8 @@ public:
         ->get_current_value();
   };
 
+  // FIX: This should not be optional. If the socket does not
+  // exists then it should return an error.
   template <typename T>
   std::optional<T> get_default_output_value(NodeId for_node,
                                             SocketId at_socket) const {
@@ -104,6 +110,8 @@ public:
         to);
   };
 
+  // FIX: This should not be optional. If the socket does not
+  // exists then it should return an error.
   template <typename T>
   std::optional<T> get_current_input_value(NodeId for_node,
                                            SocketId at_socket) const {
@@ -113,6 +121,8 @@ public:
         ->get_current_value();
   };
 
+  // FIX: This should not be optional. If the socket does not
+  // exists then it should return an error.
   template <typename T>
   std::optional<T> get_default_input_value(NodeId for_node,
                                            SocketId at_socket) const {

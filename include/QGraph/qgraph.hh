@@ -67,7 +67,7 @@ public:
     return nodes[id];
   };
 
-  auto get_number_of_nodes() { return nodes.size(); }
+  int get_number_of_nodes() { return nodes.size(); }
 
   //
   // Socket access from graph.

@@ -6,6 +6,7 @@
 #include <limits>
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <stdexcept>
 #include <unordered_map>
 #include <vector>
@@ -111,15 +112,11 @@ public:
   };
 
   auto get_neighbors() const {
-    // TODO: Improve this.
-    std::vector<Link> v;
-    for (auto x : out_sockets_) {
-      for (auto y : x->get_neighbors()) {
-        v.push_back(y);
-      }
-    }
-    return v;
-  };
+    return out_sockets_ | std::views::transform([](const auto &socket) {
+             return socket->get_neighbors();
+           }) |
+           std::views::join;
+  }
 
   virtual void execute() {};
 };

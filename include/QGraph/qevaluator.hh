@@ -1,7 +1,9 @@
 #pragma once
 
 #include <QGraph/qgraph.hh>
+#include <algorithm>
 #include <iostream>
+#include <ranges>
 #include <vector>
 
 namespace qgraph {
@@ -26,11 +28,9 @@ private:
 
   // Recursive depth firt search.
   void dfs() {
-    for (int i = 0; i < graph_.get_number_of_nodes(); i++) {
-      colors_[i] = WHITE;
-    }
+    std::ranges::fill(colors_ | std::views::values, WHITE);
 
-    for (int i = 0; i < graph_.get_number_of_nodes(); i++) {
+    for (int i : std::views::iota(0, graph_.get_number_of_nodes())) {
       if (colors_[i] == WHITE) {
         dfs_visit(i);
       }
@@ -68,11 +68,9 @@ public:
     verify_integrity();
 
     if (is_valid_) {
-      for (int i = execution_order_.size() - 1; 0 <= i; i--) {
-        // Execute node.
-        graph_.nodes[execution_order_[i]]->execute();
-        // Propagate values.
-        graph_.propagate_values(execution_order_[i]);
+      for (auto i : execution_order_ | std::views::reverse) {
+        graph_.nodes[i]->execute();
+        graph_.propagate_values(i);
       }
     } else {
       return;

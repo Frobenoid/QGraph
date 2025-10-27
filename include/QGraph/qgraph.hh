@@ -3,6 +3,7 @@
 #include "QGraph/qnode.hh"
 #include "QGraph/qsocket.hh"
 #include "QGraph/qtypes.hh"
+#include <algorithm>
 #include <cassert>
 #include <memory>
 #include <optional>
@@ -93,18 +94,14 @@ public:
 
   template <typename T>
   void set_current_output_value(NodeId for_node, SocketId at_socket, T to) {
-    return nodes[for_node]
-        ->get_output_socket<T>(at_socket)
-        .value()
-        ->set_current_value(to);
+    nodes[for_node]->get_output_socket<T>(at_socket).value()->set_current_value(
+        to);
   };
 
   template <typename T>
   void set_default_output_value(NodeId for_node, SocketId at_socket, T to) {
-    return nodes[for_node]
-        ->get_output_socket<T>(at_socket)
-        .value()
-        ->set_default_value(to);
+    nodes[for_node]->get_output_socket<T>(at_socket).value()->set_default_value(
+        to);
   };
 
   template <typename T>
@@ -127,18 +124,14 @@ public:
 
   template <typename T>
   void set_current_input_value(NodeId for_node, SocketId at_socket, T to) {
-    return nodes[for_node]
-        ->get_input_socket<T>(at_socket)
-        .value()
-        ->set_current_value(to);
+    nodes[for_node]->get_input_socket<T>(at_socket).value()->set_current_value(
+        to);
   };
 
   template <typename T>
   void set_default_input_value(NodeId for_node, SocketId at_socket, T to) {
-    return nodes[for_node]
-        ->get_input_socket<T>(at_socket)
-        .value()
-        ->set_default_value(to);
+    nodes[for_node]->get_input_socket<T>(at_socket).value()->set_default_value(
+        to);
   };
 
   void propagate_values(NodeId for_node) const {
@@ -147,18 +140,19 @@ public:
     // type. It would be a good idea to make this work also
     // if they have types A and B such that A can be casted
     // into B.
-    for (auto [src_socket, dest_node, dest_socket] :
-         nodes[for_node]->get_neighbors()) {
+    auto neighbors = get_node(for_node)->get_neighbors();
+
+    std::ranges::for_each(neighbors, [this, for_node](const auto &link) {
+      auto [src_socket, dst_node, dst_socket] = link;
 
       auto source_node = get_node(for_node);
-      auto dst_node = get_node(dest_node);
-
+      auto dest_node = get_node(dst_node);
       auto output_socket = source_node->out_sockets_[src_socket];
-      auto input_socket = dst_node->in_sockets_[dest_socket];
+      auto input_socket = dest_node->in_sockets_[dst_socket];
 
       auto src_value = output_socket->get_untyped_current_value();
       input_socket->set_current_value(src_value);
-    }
+    });
   };
 };
 }; // namespace qgraph

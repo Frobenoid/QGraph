@@ -174,4 +174,12 @@ public:
     }
   };
 };
+
+class ConstantNode : public Node {
+public:
+  enum Socket { Value = 0 };
+
+  ConstantNode() { add_output_socket<int>("Output").with_default_value(0); }
+  void execute() override {};
+};
 } // namespace qgraph

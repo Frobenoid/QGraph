@@ -55,14 +55,34 @@ public:
     return nodes[id];
   };
 
+  //
+  // Socket access from graph.
+  //
+
   template <typename T>
   std::optional<T> get_current_output_value(NodeId for_node,
-                                            SocketId at_socket) {
+                                            SocketId at_socket) const {
     return nodes[for_node]
         ->get_output_socket<T>(at_socket)
         .value()
         ->get_current_value();
   };
+
+  template <typename T>
+  void set_current_output_value(NodeId for_node, SocketId at_socket, T to) {
+    return nodes[for_node]
+        ->get_output_socket<T>(at_socket)
+        .value()
+        ->set_current_value(to);
+  };
+
+  // TODO: Implement:
+  // set_default_output_value()
+  // set_default_input_value()
+  // set_current_input_value()
+  // get_default_input_value()
+  // get_current_input_value()
+  // get_default_output_value()
 
   void propagate_values(NodeId for_node) const {
     for (auto [src_socket, dest_node, dest_socket] :

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QGraph/qgraph.hh>
-#include <cstdint>
 #include <vector>
 
 namespace qgraph {
@@ -28,24 +27,21 @@ private:
 
   // Recursive depth firt search.
   void dfs() {
-    uint16_t time = 0;
     // TODO: Is it cheaper to use indices?
     // Profile this and make a decision.
     for (auto node : graph_.nodes) {
       if (!visited_.contains(node->id)) {
-        dfs_visit(node->id, time);
+        dfs_visit(node->id);
       }
     }
   };
 
-  void dfs_visit(NodeId node, uint16_t &time) {
-    time += 1;
-
+  void dfs_visit(NodeId node) {
     visited_.insert(node);
 
     for (auto link : graph_.get_node(node)->get_neighbors()) {
-      if (!visited_.contains(node)) {
-        dfs_visit(link.destination_node, time);
+      if (!visited_.contains(link.destination_node)) {
+        dfs_visit(link.destination_node);
       }
     }
 
@@ -57,16 +53,17 @@ public:
   Evaluator(Graph &graph) : graph_(graph) {};
 
   auto get_execution_order() { return execution_order_; };
+
   void evaluate() {
     verify_integrity();
 
     // Execute nodes.
     // LOOP INVARIANT: Inputs are ready to be used.
-    for (auto node_id : execution_order_) {
+    for (int i = execution_order_.size() - 1; 0 <= i; i--) {
       // Execute node.
-      graph_.nodes[node_id]->execute();
+      graph_.nodes[execution_order_[i]]->execute();
       // Propagate values.
-      graph_.propagate_values(node_id);
+      graph_.propagate_values(execution_order_[i]);
     }
   };
 };

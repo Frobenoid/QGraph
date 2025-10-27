@@ -71,7 +71,7 @@ TEST_CASE("Socket connection", "[socket, connection]") {
   REQUIRE_FALSE(b.connected_to.contains({0, 0, 0}));
 }
 
-TEST_CASE("Tree construction", "[tree, node]") {
+TEST_CASE("Tree construction", "[graph, node]") {
   qgraph::Graph g;
 
   SECTION("Node addition and retrieval") {
@@ -109,7 +109,7 @@ TEST_CASE("Tree construction", "[tree, node]") {
   }
 }
 
-TEST_CASE("Tree evaluation", "[tree, evaluation]") {
+TEST_CASE("Tree evaluation", "[graph, evaluation]") {
   // (1 + (1 + (1+ 1)))
 
   qgraph::Graph g;
@@ -129,10 +129,50 @@ TEST_CASE("Tree evaluation", "[tree, evaluation]") {
 
   auto order = eval.get_execution_order();
 
-  REQUIRE(order[0] == 0);
-  REQUIRE(order[1] == 1);
-  REQUIRE(order[2] == 2);
-
   REQUIRE(g.get_current_output_value<int>(2, qgraph::MathNode::Socket::RESULT)
               .value() == 4);
+}
+
+TEST_CASE("Evaluation order", "[graph, evaluation]") {
+  qgraph::Graph g;
+
+  g.add_node<qgraph::ConstantNode>(); // 0
+  g.add_node<qgraph::ConstantNode>(); // 1
+  g.add_node<qgraph::ConstantNode>(); // 2
+  g.add_node<qgraph::ConstantNode>(); // 3
+
+  g.add_node<qgraph::MathNode>(); // 4
+  g.add_node<qgraph::MathNode>(); // 5
+  g.add_node<qgraph::MathNode>(); // 6
+
+  g.set_current_output_value<int>(0, qgraph::ConstantNode::Socket::Value, 10);
+  g.set_current_output_value<int>(1, qgraph::ConstantNode::Socket::Value, 30);
+  g.set_current_output_value<int>(2, qgraph::ConstantNode::Socket::Value, 40);
+  g.set_current_output_value<int>(3, qgraph::ConstantNode::Socket::Value, 20);
+
+  g.connect<int>(0, qgraph::ConstantNode::Socket::Value, 5,
+                 qgraph::MathNode::Socket::LHS);
+  g.connect<int>(3, qgraph::ConstantNode::Socket::Value, 5,
+                 qgraph::MathNode::Socket::RHS);
+
+  g.connect<int>(5, qgraph::MathNode::Socket::RESULT, 6,
+                 qgraph::MathNode::Socket::LHS);
+  g.connect<int>(1, qgraph::ConstantNode::Socket::Value, 6,
+                 qgraph::MathNode::Socket::RHS);
+
+  g.connect<int>(6, qgraph::MathNode::Socket::RESULT, 4,
+                 qgraph::MathNode::Socket::LHS);
+  g.connect<int>(2, qgraph::ConstantNode::Socket::Value, 4,
+                 qgraph::MathNode::Socket::RHS);
+
+  qgraph::Evaluator eval(g);
+
+  eval.evaluate();
+
+  REQUIRE(g.get_current_output_value<int>(5, qgraph::MathNode::Socket::RESULT)
+              .value() == 30);
+  REQUIRE(g.get_current_output_value<int>(6, qgraph::MathNode::Socket::RESULT)
+              .value() == 60);
+  REQUIRE(g.get_current_output_value<int>(4, qgraph::MathNode::Socket::RESULT)
+              .value() == 100);
 }

@@ -41,25 +41,6 @@ private:
     colors_[node] = GRAY;
 
     visited_.insert(node);
-    /*
-     auto neighbors = graph_.get_node(node)->get_neighbors();
-
-// Check for cycles first
-if (std::ranges::any_of(neighbors, [this](const auto& link) {
-  return colors_[link.destination_node] == GRAY;
-})) {
-  is_valid_ = false;
-  std::cerr << "WARN: Provided graph is not valid. Contains a directed cycle\n";
-  return;
-}
-
-// Visit white neighbors
-std::ranges::for_each(
-  neighbors | std::views::filter([this](const auto& link) {
-    return colors_[link.destination_node] == WHITE;
-  }),
-  [this](const auto& link) { dfs_visit(link.destination_node); }
-);  */
 
     auto neighbors = graph_.get_node(node)->get_neighbors();
 

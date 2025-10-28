@@ -21,15 +21,19 @@ private:
   std::unordered_map<std::string, std::uint16_t> out_sockets_labels_;
 
   /// Index in parent graph.
-  NodeId id;
+  NodeId id = -1;
+
+  std::vector<std::shared_ptr<qgraph::Socket>> in_sockets_;
 
 public:
-  std::vector<std::shared_ptr<qgraph::Socket>> in_sockets_;
   std::vector<std::shared_ptr<qgraph::Socket>> out_sockets_;
   Node() {};
 
-  NodeId get_id() { return id; };
-  void set_id(NodeId to) { id = to; };
+  NodeId get_id() const { return id; };
+  void set_id(NodeId to) {
+    if (id < 0)
+      id = to;
+  };
 
   template <typename T>
   builder::InSocketBuilder<T> add_input_socket(const std::string &label) {

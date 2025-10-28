@@ -24,9 +24,9 @@ private:
   NodeId id = -1;
 
   std::vector<std::shared_ptr<qgraph::Socket>> in_sockets_;
+  std::vector<std::shared_ptr<qgraph::Socket>> out_sockets_;
 
 public:
-  std::vector<std::shared_ptr<qgraph::Socket>> out_sockets_;
   Node() {};
 
   NodeId get_id() const { return id; };
@@ -36,13 +36,23 @@ public:
   };
 
   auto num_of_input_sockets() { return in_sockets_.size(); };
+  auto num_of_output_sockets() { return out_sockets_.size(); };
 
   std::shared_ptr<Socket> get_untyped_input_socket(SocketId socket) {
     if (socket < in_sockets_.size()) {
       return in_sockets_[socket];
     } else {
       throw std::invalid_argument(
-          &"Out of bounds access for untyped socket at "[socket]);
+          &"Out of bounds access for untyped input socket at "[socket]);
+    }
+  };
+
+  std::shared_ptr<Socket> get_untyped_output_socket(SocketId socket) {
+    if (socket < out_sockets_.size()) {
+      return out_sockets_[socket];
+    } else {
+      throw std::invalid_argument(
+          &"Out of bounds access for untyped output socket at "[socket]);
     }
   };
 

@@ -52,7 +52,7 @@ public:
     auto a = get_node(from_node);
     auto a_socket = a->get_output_socket<F>(at_out_socket).value();
 
-    assert(at_out_socket < a->out_sockets_.size());
+    assert(at_out_socket < a->num_of_output_sockets());
 
     auto b = get_node(to_node);
     auto b_socket = b->get_input_socket<F>(at_in_socket).value();
@@ -156,9 +156,8 @@ public:
 
       auto source_node = get_node(for_node);
       auto dest_node = get_node(dst_node);
-      auto output_socket = source_node->out_sockets_[src_socket];
+      auto output_socket = source_node->get_untyped_output_socket(src_socket);
       auto input_socket = dest_node->get_untyped_input_socket(dst_socket);
-      // auto input_socket = dest_node->in_sockets_[dst_socket];
 
       auto src_value = output_socket->get_untyped_current_value();
       input_socket->set_current_value(src_value);

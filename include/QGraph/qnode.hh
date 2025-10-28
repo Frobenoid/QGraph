@@ -1,5 +1,6 @@
 #pragma once
 
+#include "QGraph/qtypes.hh"
 #include <QGraph/qsocket.hh>
 #include <cassert>
 #include <cstdint>
@@ -14,16 +15,21 @@
 namespace qgraph {
 class Node {
 private:
+  // Deprecated, remove this
   std::unordered_map<std::string, std::uint16_t> in_sockets_labels_;
+  // Deprecated, remove this
   std::unordered_map<std::string, std::uint16_t> out_sockets_labels_;
 
-public:
-  Node() {};
   /// Index in parent graph.
   NodeId id;
 
+public:
   std::vector<std::shared_ptr<qgraph::Socket>> in_sockets_;
   std::vector<std::shared_ptr<qgraph::Socket>> out_sockets_;
+  Node() {};
+
+  NodeId get_id() { return id; };
+  void set_id(NodeId to) { id = to; };
 
   template <typename T>
   builder::InSocketBuilder<T> add_input_socket(const std::string &label) {

@@ -35,6 +35,17 @@ public:
       id = to;
   };
 
+  auto num_of_input_sockets() { return in_sockets_.size(); };
+
+  std::shared_ptr<Socket> get_untyped_input_socket(SocketId socket) {
+    if (socket < in_sockets_.size()) {
+      return in_sockets_[socket];
+    } else {
+      throw std::invalid_argument(
+          &"Out of bounds access for untyped socket at "[socket]);
+    }
+  };
+
   template <typename T>
   builder::InSocketBuilder<T> add_input_socket(const std::string &label) {
     if (label.empty()) {

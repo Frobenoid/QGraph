@@ -9,6 +9,7 @@
 #include <optional>
 #include <sys/types.h>
 #include <type_traits>
+#include <utility>
 #include <vector>
 
 namespace qgraph {
@@ -19,10 +20,8 @@ class Graph {
 public:
   std::vector<std::shared_ptr<qgraph::Node>> nodes;
 
-  // TODO: It should be possible to initialize the class T
-  // in the same way `make_shared<T>(...args);` works.
-  template <ConceptObject T> void add_node() {
-    nodes.emplace_back(std::make_shared<T>());
+  template <ConceptObject T, typename... Args> void add_node(Args... args) {
+    nodes.emplace_back(std::make_shared<T>(std::forward<Args>(args)...));
     nodes.back()->id = nodes.size() - 1;
   };
 

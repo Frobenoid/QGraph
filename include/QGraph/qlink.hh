@@ -1,5 +1,6 @@
 #pragma once
 #include <QGraph/qtypes.hh>
+#include <tuple>
 
 namespace qgraph {
 class Link {
@@ -9,15 +10,9 @@ public:
   SocketId destination_socket;
 
   bool operator<(const Link &rhs) const {
-    return source_socket < rhs.source_socket &&
-           destination_node < rhs.destination_node &&
-           destination_socket < rhs.destination_socket;
-  }
-
-  bool operator==(const Link &rhs) const {
-    return source_socket == rhs.source_socket &&
-           destination_node == rhs.destination_node &&
-           destination_socket == rhs.destination_socket;
+    return std::tie(source_socket, destination_node, destination_socket) <
+           std::tie(rhs.source_socket, rhs.destination_node,
+                    rhs.destination_socket);
   }
 };
 } // namespace qgraph

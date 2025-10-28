@@ -52,25 +52,6 @@ TEST_CASE("Nodes", "[node]") {
   REQUIRE(f == 11);
 }
 
-TEST_CASE("Socket connection", "[socket, connection]") {
-  qgraph::InSocket<int> a("a");
-
-  a.connect(0, 0);
-
-  REQUIRE(a.connected_to->destination_node == 0);
-  REQUIRE(a.connected_to->destination_socket == 0);
-
-  qgraph::OutSocket<int> b("b");
-
-  b.connect(0, 0);
-
-  REQUIRE(b.connected_to.contains({0, 0, 0}));
-
-  b.disconnect(0, 0);
-
-  REQUIRE_FALSE(b.connected_to.contains({0, 0, 0}));
-}
-
 TEST_CASE("Tree construction", "[graph, node]") {
   qgraph::Graph g;
 

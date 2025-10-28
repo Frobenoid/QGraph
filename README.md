@@ -4,8 +4,7 @@
 
 - [QGraph](#qgraph)
   - [Installation](#installation)
-  - [Examples](#examples)
-  - [Creating a node](#creating-a-node)
+  - [Examples](#examples) - [Creating custom nodes](#creating-custom-nodes) - [Using custom socket types](#using-custom-socket-types)
   <!--toc:end-->
 
 QGraph is a library for building and evaluating computational graphs. It offers the
@@ -21,7 +20,7 @@ the state of the node whenever called.
 Here we create a custom nodes, define their behaviour, add them to a graph, connect
 them, evaluate the graph and retrieve the result of this computation.
 
-## Creating a node
+### Creating custom nodes
 
 Every custom node should be derived from the `qgraph::Node` class and override the
 `execute` method (unless the node performs no computations). To allow for more
@@ -121,3 +120,5 @@ int main() {
 };
 
 ```
+
+### Using custom socket types

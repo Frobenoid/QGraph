@@ -1,7 +1,6 @@
 add_executable(qgraph qgraph.cc)
 target_link_libraries(
 qgraph PRIVATE qgraph::libqgraph
-PkgConfig::libedit
 )
 
 include(GNUInstallDirs)

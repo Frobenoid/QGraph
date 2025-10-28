@@ -2,10 +2,11 @@
 
 <!--toc:start-->
 
-- [QGraph](#qgraph)
-  - [Installation](#installation)
-  - [Examples](#examples) - [Creating custom nodes](#creating-custom-nodes) - [Using custom socket types](#using-custom-socket-types)
-  <!--toc:end-->
+- [Installation](#installation)
+- [Examples](#examples)
+  - [Creating custom nodes](#creating-custom-nodes)
+  - [Using custom socket types](#using-custom-socket-types)
+    <!--toc:end-->
 
 QGraph is a library for building and evaluating computational graphs. It offers the
 capacity to create nodes with sockets holding custom types and functions that change

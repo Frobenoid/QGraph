@@ -1,6 +1,5 @@
 {
   "dependencies": [
-    "libedit",
     "catch2"
   ]
 }

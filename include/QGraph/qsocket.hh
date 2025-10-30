@@ -9,12 +9,29 @@
 #include <set>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 
 namespace qgraph {
 
 class Socket {
+private:
+  // Index in parent node input sockets.
+  // May not be initialized when the socket is created.
+  std::optional<SocketId> id_;
+
 public:
-  SocketId id;
+  void set_id(SocketId to) {
+    if (!id_.has_value()) {
+      id_ = to;
+    }
+  };
+
+  SocketId id() {
+    return id_.has_value()
+               ? id_.value()
+               : throw std::runtime_error("The current socket has no ID");
+  }
+
   virtual ~Socket() = default;
   virtual std::set<Link> get_neighbors() const { return {}; };
   virtual void set_current_value(const std::any to) {};
@@ -25,17 +42,18 @@ template <typename T> class InSocket : public Socket {
 private:
   T default_value_;
   T current_value_;
+  std::optional<Link> connected_to_;
+  std::string label_;
 
 public:
-  // Index in parent node input sockets.
-  SocketId id;
-  std::optional<Link> connected_to;
-  std::string label;
+  InSocket(const std::string &label) : label_(label) {};
 
-  InSocket(const std::string &label) : label(label) {};
+  std::optional<Link> connected_to() { return connected_to_; }
 
-  T get_current_value() const { return current_value_; };
-  T get_default_value() const { return default_value_; };
+  std::string_view label() const { return label_; }
+
+  T current_value() const { return current_value_; };
+  T default_value() const { return default_value_; };
 
   void set_current_value(const std::any to) override {
     current_value_ = std::any_cast<T>(to);
@@ -48,42 +66,42 @@ public:
   };
 
   void connect(const qgraph::NodeId to_node, const qgraph::SocketId at_socket) {
-    connected_to = Link{id, to_node, at_socket};
+    connected_to_ = Link{this->id(), to_node, at_socket};
   };
 
-  void disconnect() { connected_to.reset(); };
+  void disconnect() { connected_to_.reset(); };
 };
 
 template <typename T> class OutSocket : public Socket {
 private:
   T default_value_;
   T current_value_;
+  // Set containing all input sockets this is connected to.
+  std::set<Link> connected_to_;
+  // Label of the node.
+  std::string label_;
 
 public:
-  // Index inside parent node output sockets.
-  qgraph::SocketId id;
-  // Set containing all input sockets this is connected to.
-  std::set<Link> connected_to;
-  // Label of the node.
-  std::string label;
+  OutSocket(const std::string &label) : label_(label) {};
 
-  OutSocket(const std::string &label) : label(label) {};
+  T current_value() const { return current_value_; };
+  T default_value() const { return default_value_; }
 
-  T get_current_value() const { return current_value_; };
-  T get_default_value() const { return default_value_; }
+  std::string_view label() const { return label_; }
 
+  std::set<Link> connected_to() const { return connected_to_; }
   void set_current_value(const T to) { current_value_ = to; };
   void set_default_value(const T to) { default_value_ = to; };
 
   void connect(const qgraph::NodeId to_node, const qgraph::SocketId at_socket) {
-    connected_to.emplace(id, to_node, at_socket);
+    connected_to_.emplace(id(), to_node, at_socket);
   };
 
   void disconnect(const uint16_t to_node, const uint16_t at_socket) {
-    connected_to.erase({id, to_node, at_socket});
+    connected_to_.erase({id(), to_node, at_socket});
   };
 
-  std::set<Link> get_neighbors() const override { return this->connected_to; }
+  std::set<Link> get_neighbors() const override { return this->connected_to_; }
 
   std::any get_untyped_current_value() const override {
     return std::any(current_value_);

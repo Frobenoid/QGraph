@@ -3,8 +3,7 @@
 #include <tuple>
 
 namespace qgraph {
-class Link {
-public:
+struct Link {
   SocketId source_socket;
   NodeId destination_node;
   SocketId destination_socket;

@@ -36,18 +36,18 @@ public:
   };
 
   void execute() override {
-    auto a = get_input_socket<int>(Socket::LHS).value()->get_current_value();
-    auto b = get_input_socket<int>(Socket::RHS).value()->get_current_value();
+    auto a = input_socket<int>(Socket::LHS)->current_value();
+    auto b = input_socket<int>(Socket::RHS)->current_value();
     switch (this->operation) {
 
     case SUM:
-      get_output_socket<int>(Socket::RESULT).value()->set_current_value(a + b);
+      output_socket<int>(Socket::RESULT)->set_current_value(a + b);
       break;
     case SUB:
-      get_output_socket<int>(Socket::RESULT).value()->set_current_value(a - b);
+      output_socket<int>(Socket::RESULT)->set_current_value(a - b);
       break;
     case MUL:
-      get_output_socket<int>(Socket::RESULT).value()->set_current_value(a * b);
+      output_socket<int>(Socket::RESULT)->set_current_value(a * b);
       break;
     }
   };
@@ -72,7 +72,7 @@ int main() {
   eval.evaluate();
 
   // Getting the result.
-  auto res = g.get_current_output_value<int>(3, MathNode::RESULT).value();
+  auto res = g.current_output_value<int>(3, MathNode::RESULT);
 
   std::cout << "(100 + 100) * 100 = " << res << "\n";
 

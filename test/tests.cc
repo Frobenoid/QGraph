@@ -6,7 +6,6 @@
 #include <catch2/matchers/catch_matchers.hpp>
 #include <catch2/matchers/catch_matchers_vector.hpp>
 #include <string_view>
-#include <vector>
 
 TEST_CASE("Socket builder", "[socket]") {
   qgraph::Node n;
@@ -16,13 +15,13 @@ TEST_CASE("Socket builder", "[socket]") {
   auto a = n.get_input_socket<int>("Input").value();
   auto b = n.get_output_socket<bool>("Condition").value();
 
-  REQUIRE(a->get_default_value() == 10);
-  REQUIRE(a->get_current_value() == 10);
-  REQUIRE(a->label == std::string_view("Input"));
+  REQUIRE(a->default_value() == 10);
+  REQUIRE(a->current_value() == 10);
+  REQUIRE(a->label() == std::string_view("Input"));
 
-  REQUIRE(b->get_default_value() == false);
-  REQUIRE(b->get_current_value() == false);
-  REQUIRE(b->label == std::string_view("Condition"));
+  REQUIRE(b->default_value() == false);
+  REQUIRE(b->current_value() == false);
+  REQUIRE(b->label() == std::string_view("Condition"));
 }
 
 TEST_CASE("Change current value", "[socket]") {
@@ -30,8 +29,8 @@ TEST_CASE("Change current value", "[socket]") {
   n.add_input_socket<float>("A").with_default_value(10.0);
   n.get_input_socket<float>("A").value()->set_current_value(11.5);
 
-  REQUIRE(n.get_input_socket<float>("A").value()->get_current_value() == 11.5);
-  REQUIRE(n.get_input_socket<float>("A").value()->get_default_value() == 10.0);
+  REQUIRE(n.get_input_socket<float>("A").value()->current_value() == 11.5);
+  REQUIRE(n.get_input_socket<float>("A").value()->default_value() == 10.0);
 }
 
 TEST_CASE("Nodes", "[node]") {
@@ -39,7 +38,7 @@ TEST_CASE("Nodes", "[node]") {
 
   math.execute();
 
-  auto t = math.get_output_socket<int>("C").value()->get_current_value();
+  auto t = math.get_output_socket<int>("C").value()->current_value();
 
   REQUIRE(t == 2);
 
@@ -47,7 +46,7 @@ TEST_CASE("Nodes", "[node]") {
 
   incr.execute();
 
-  auto f = incr.get_output_socket<int>("Value").value()->get_current_value();
+  auto f = incr.get_output_socket<int>("Value").value()->current_value();
 
   REQUIRE(f == 11);
 }
@@ -58,12 +57,11 @@ TEST_CASE("Tree construction", "[graph, node]") {
   SECTION("Node addition and retrieval") {
     g.add_node<qgraph::IncrNode>();
 
-    REQUIRE(g.nodes.size() == 1);
+    REQUIRE(g.num_of_nodes() == 1);
 
-    REQUIRE(g.get_node(0)
-                ->get_output_socket<int>("Value")
-                .value()
-                ->get_default_value() == 0);
+    REQUIRE(
+        g.node(0)->get_output_socket<int>("Value").value()->default_value() ==
+        0);
   }
 
   SECTION("Node deletion") {
@@ -71,7 +69,7 @@ TEST_CASE("Tree construction", "[graph, node]") {
 
     g.delete_node(0);
 
-    REQUIRE(g.nodes.size() == 0);
+    REQUIRE(g.num_of_nodes() == 0);
   }
 
   SECTION("Node connection") {
@@ -82,8 +80,8 @@ TEST_CASE("Tree construction", "[graph, node]") {
                    qgraph::MathNode::Socket::LHS);
 
     auto source =
-        g.get_node(0)->get_output_socket<int>("C").value()->connected_to;
-    auto dest = g.get_node(1)->get_input_socket<int>("A").value()->connected_to;
+        g.node(0)->get_output_socket<int>("C").value()->connected_to();
+    auto dest = g.node(1)->get_input_socket<int>("A").value()->connected_to();
 
     REQUIRE(source.size() == 1);
     REQUIRE(dest.has_value());
@@ -103,7 +101,7 @@ TEST_CASE("Tree evaluation", "[graph, evaluation]") {
   g.connect<int>(1, qgraph::MathNode::Socket::RESULT, 2,
                  qgraph::MathNode::Socket::RHS);
 
-  REQUIRE(g.nodes.size() == 3);
+  REQUIRE(g.num_of_nodes() == 3);
 
   qgraph::Evaluator eval(g);
   eval.evaluate();
@@ -112,8 +110,8 @@ TEST_CASE("Tree evaluation", "[graph, evaluation]") {
 
   auto order = eval.get_execution_order();
 
-  REQUIRE(g.get_current_output_value<int>(2, qgraph::MathNode::Socket::RESULT)
-              .value() == 4);
+  REQUIRE(g.current_output_value<int>(2, qgraph::MathNode::Socket::RESULT) ==
+          4);
 }
 
 TEST_CASE("Evaluation order", "[graph, evaluation]") {
@@ -152,12 +150,12 @@ TEST_CASE("Evaluation order", "[graph, evaluation]") {
 
   eval.evaluate();
 
-  REQUIRE(g.get_current_output_value<int>(5, qgraph::MathNode::Socket::RESULT)
-              .value() == 30);
-  REQUIRE(g.get_current_output_value<int>(6, qgraph::MathNode::Socket::RESULT)
-              .value() == 60);
-  REQUIRE(g.get_current_output_value<int>(4, qgraph::MathNode::Socket::RESULT)
-              .value() == 100);
+  REQUIRE(g.current_output_value<int>(5, qgraph::MathNode::Socket::RESULT) ==
+          30);
+  REQUIRE(g.current_output_value<int>(6, qgraph::MathNode::Socket::RESULT) ==
+          60);
+  REQUIRE(g.current_output_value<int>(4, qgraph::MathNode::Socket::RESULT) ==
+          100);
 }
 
 TEST_CASE("Invalid graph", "[graph, validation]") {

@@ -2,6 +2,7 @@
 
 #include <QGraph/qgraph.hh>
 #include <algorithm>
+#include <cstddef>
 #include <iostream>
 #include <ranges>
 #include <vector>
@@ -30,7 +31,7 @@ private:
   void dfs() {
     std::ranges::fill(colors_ | std::views::values, WHITE);
 
-    for (int i : std::views::iota(0, graph_.get_number_of_nodes())) {
+    for (int i : std::views::iota(size_t{0}, graph_.num_of_nodes())) {
       if (colors_[i] == WHITE) {
         dfs_visit(i);
       }
@@ -42,7 +43,7 @@ private:
 
     visited_.insert(node);
 
-    auto neighbors = graph_.get_node(node)->get_neighbors();
+    auto neighbors = graph_.node(node)->get_neighbors();
 
     // Check if there are directed cycles.
     if (std::ranges::any_of(neighbors, [this](const auto &link) {
@@ -78,7 +79,7 @@ public:
     if (is_valid_) {
       std::ranges::for_each(execution_order_ | std::views::reverse,
                             [this](const auto node) {
-                              graph_.nodes[node]->execute();
+                              graph_.execute_node(node);
                               graph_.propagate_values(node);
                             });
     } else {

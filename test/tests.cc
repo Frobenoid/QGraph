@@ -59,10 +59,9 @@ TEST_CASE("Tree construction", "[graph, node]") {
 
     REQUIRE(g.num_of_nodes() == 1);
 
-    REQUIRE(g.get_node(0)
-                ->get_output_socket<int>("Value")
-                .value()
-                ->default_value() == 0);
+    REQUIRE(
+        g.node(0)->get_output_socket<int>("Value").value()->default_value() ==
+        0);
   }
 
   SECTION("Node deletion") {
@@ -81,9 +80,8 @@ TEST_CASE("Tree construction", "[graph, node]") {
                    qgraph::MathNode::Socket::LHS);
 
     auto source =
-        g.get_node(0)->get_output_socket<int>("C").value()->connected_to();
-    auto dest =
-        g.get_node(1)->get_input_socket<int>("A").value()->connected_to();
+        g.node(0)->get_output_socket<int>("C").value()->connected_to();
+    auto dest = g.node(1)->get_input_socket<int>("A").value()->connected_to();
 
     REQUIRE(source.size() == 1);
     REQUIRE(dest.has_value());

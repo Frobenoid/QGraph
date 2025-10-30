@@ -42,7 +42,7 @@ private:
 
     visited_.insert(node);
 
-    auto neighbors = graph_.get_node(node)->get_neighbors();
+    auto neighbors = graph_.node(node)->get_neighbors();
 
     // Check if there are directed cycles.
     if (std::ranges::any_of(neighbors, [this](const auto &link) {

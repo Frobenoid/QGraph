@@ -48,16 +48,14 @@ public:
     assert(to_node < nodes_.size());
 
     std::shared_ptr<qgraph::OutSocket<F>> a =
-        get_node(from_node)->output_socket<F>(at_out_socket).value();
+        node(from_node)->output_socket<F>(at_out_socket).value();
 
     std::shared_ptr<qgraph::InSocket<F>> b =
-        get_node(to_node)->input_socket<F>(at_in_socket).value();
+        node(to_node)->input_socket<F>(at_in_socket).value();
 
     a->connect(to_node, b->id());
     b->connect(from_node, a->id());
   };
-
-  std::shared_ptr<qgraph::Node> node(NodeId at) { return nodes_[at]; };
 
   template <typename F>
   void connect(NodeId from_node, const SocketId at_out_socket, NodeId to_node,
@@ -66,12 +64,12 @@ public:
     assert(from_node < nodes_.size());
     assert(to_node < nodes_.size());
 
-    auto a = get_node(from_node);
+    auto a = node(from_node);
     auto a_socket = a->output_socket<F>(at_out_socket);
 
     assert(at_out_socket < a->num_of_output_sockets());
 
-    auto b = get_node(to_node);
+    auto b = node(to_node);
     auto b_socket = b->input_socket<F>(at_in_socket);
 
     assert(at_in_socket < b->num_of_input_sockets());
@@ -84,7 +82,7 @@ public:
   // This can be achieved by using index masks.
   void delete_node(qgraph::NodeId id) { nodes_.erase(nodes_.begin() + id); };
 
-  std::shared_ptr<qgraph::Node> get_node(qgraph::NodeId id) const {
+  std::shared_ptr<qgraph::Node> node(qgraph::NodeId id) const {
     return nodes_[id];
   };
 
@@ -138,13 +136,13 @@ public:
     // type. It would be a good idea to make this work also
     // if they have types A and B such that A can be casted
     // into B.
-    auto neighbors = get_node(for_node)->get_neighbors();
+    auto neighbors = node(for_node)->get_neighbors();
 
     std::ranges::for_each(neighbors, [this, for_node](const auto &link) {
       auto [src_socket, dst_node, dst_socket] = link;
 
-      auto source_node = get_node(for_node);
-      auto dest_node = get_node(dst_node);
+      auto source_node = node(for_node);
+      auto dest_node = node(dst_node);
       auto output_socket = source_node->get_untyped_output_socket(src_socket);
       auto input_socket = dest_node->get_untyped_input_socket(dst_socket);
 

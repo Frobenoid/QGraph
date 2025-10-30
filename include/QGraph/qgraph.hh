@@ -5,32 +5,46 @@
 #include "QGraph/qtypes.hh"
 #include <algorithm>
 #include <cassert>
+#include <cstddef>
 #include <memory>
 #include <optional>
+#include <stdexcept>
 #include <sys/types.h>
 #include <type_traits>
 #include <utility>
 #include <vector>
 
 namespace qgraph {
+
 template <typename T>
 concept DerivesNode = std::is_base_of<qgraph::Node, T>::value;
 
 class Graph {
+private:
+  std::vector<std::shared_ptr<qgraph::Node>> nodes_;
+
 public:
-  std::vector<std::shared_ptr<qgraph::Node>> nodes;
+  size_t num_of_nodes() const { return nodes_.size(); }
+
+  void execute_node(NodeId node) {
+    if (node < nodes_.size()) {
+      this->node(node)->execute();
+    } else {
+      throw std::out_of_range("Node ID is out of range.");
+    }
+  }
 
   template <DerivesNode T, typename... Args> void add_node(Args... args) {
-    nodes.emplace_back(std::make_shared<T>(std::forward<Args>(args)...));
-    nodes.back()->set_id(nodes.size() - 1);
+    nodes_.emplace_back(std::make_shared<T>(std::forward<Args>(args)...));
+    nodes_.back()->set_id(nodes_.size() - 1);
   };
 
   template <typename F>
   void connect(qgraph::NodeId from_node, const std::string &at_out_socket,
                qgraph::NodeId to_node, const std::string &at_in_socket) {
 
-    assert(from_node < nodes.size());
-    assert(to_node < nodes.size());
+    assert(from_node < nodes_.size());
+    assert(to_node < nodes_.size());
 
     std::shared_ptr<qgraph::OutSocket<F>> a =
         get_node(from_node)->get_output_socket<F>(at_out_socket).value();
@@ -42,12 +56,14 @@ public:
     b->connect(from_node, a->id);
   };
 
+  std::shared_ptr<qgraph::Node> node(NodeId at) { return nodes_[at]; };
+
   template <typename F>
   void connect(NodeId from_node, const SocketId at_out_socket, NodeId to_node,
                const SocketId at_in_socket) {
 
-    assert(from_node < nodes.size());
-    assert(to_node < nodes.size());
+    assert(from_node < nodes_.size());
+    assert(to_node < nodes_.size());
 
     auto a = get_node(from_node);
     auto a_socket = a->get_output_socket<F>(at_out_socket).value();
@@ -63,13 +79,13 @@ public:
     b_socket->connect(from_node, a_socket->id);
   };
 
-  void delete_node(qgraph::NodeId id) { nodes.erase(nodes.begin() + id); };
+  void delete_node(qgraph::NodeId id) { nodes_.erase(nodes_.begin() + id); };
 
   std::shared_ptr<qgraph::Node> get_node(qgraph::NodeId id) const {
-    return nodes[id];
+    return nodes_[id];
   };
 
-  int get_number_of_nodes() { return nodes.size(); }
+  int get_number_of_nodes() { return nodes_.size(); }
 
   //
   // Socket access from graph.
@@ -80,7 +96,7 @@ public:
   template <typename T>
   std::optional<T> get_current_output_value(NodeId for_node,
                                             SocketId at_socket) const {
-    return nodes[for_node]
+    return nodes_[for_node]
         ->get_output_socket<T>(at_socket)
         .value()
         ->get_current_value();
@@ -91,7 +107,7 @@ public:
   template <typename T>
   std::optional<T> get_default_output_value(NodeId for_node,
                                             SocketId at_socket) const {
-    return nodes[for_node]
+    return nodes_[for_node]
         ->get_output_socket<T>(at_socket)
         .value()
         ->get_default_value();
@@ -99,14 +115,18 @@ public:
 
   template <typename T>
   void set_current_output_value(NodeId for_node, SocketId at_socket, T to) {
-    nodes[for_node]->get_output_socket<T>(at_socket).value()->set_current_value(
-        to);
+    nodes_[for_node]
+        ->get_output_socket<T>(at_socket)
+        .value()
+        ->set_current_value(to);
   };
 
   template <typename T>
   void set_default_output_value(NodeId for_node, SocketId at_socket, T to) {
-    nodes[for_node]->get_output_socket<T>(at_socket).value()->set_default_value(
-        to);
+    nodes_[for_node]
+        ->get_output_socket<T>(at_socket)
+        .value()
+        ->set_default_value(to);
   };
 
   // FIX: This should not be optional. If the socket does not
@@ -114,7 +134,7 @@ public:
   template <typename T>
   std::optional<T> get_current_input_value(NodeId for_node,
                                            SocketId at_socket) const {
-    return nodes[for_node]
+    return nodes_[for_node]
         ->get_input_socket<T>(at_socket)
         .value()
         ->get_current_value();
@@ -125,7 +145,7 @@ public:
   template <typename T>
   std::optional<T> get_default_input_value(NodeId for_node,
                                            SocketId at_socket) const {
-    return nodes[for_node]
+    return nodes_[for_node]
         ->get_input_socket<T>(at_socket)
         .value()
         ->get_default_value();
@@ -133,13 +153,13 @@ public:
 
   template <typename T>
   void set_current_input_value(NodeId for_node, SocketId at_socket, T to) {
-    nodes[for_node]->get_input_socket<T>(at_socket).value()->set_current_value(
+    nodes_[for_node]->get_input_socket<T>(at_socket).value()->set_current_value(
         to);
   };
 
   template <typename T>
   void set_default_input_value(NodeId for_node, SocketId at_socket, T to) {
-    nodes[for_node]->get_input_socket<T>(at_socket).value()->set_default_value(
+    nodes_[for_node]->get_input_socket<T>(at_socket).value()->set_default_value(
         to);
   };
 

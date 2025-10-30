@@ -6,7 +6,6 @@
 #include <catch2/matchers/catch_matchers.hpp>
 #include <catch2/matchers/catch_matchers_vector.hpp>
 #include <string_view>
-#include <vector>
 
 TEST_CASE("Socket builder", "[socket]") {
   qgraph::Node n;
@@ -58,7 +57,7 @@ TEST_CASE("Tree construction", "[graph, node]") {
   SECTION("Node addition and retrieval") {
     g.add_node<qgraph::IncrNode>();
 
-    REQUIRE(g.nodes.size() == 1);
+    REQUIRE(g.num_of_nodes() == 1);
 
     REQUIRE(g.get_node(0)
                 ->get_output_socket<int>("Value")
@@ -71,7 +70,7 @@ TEST_CASE("Tree construction", "[graph, node]") {
 
     g.delete_node(0);
 
-    REQUIRE(g.nodes.size() == 0);
+    REQUIRE(g.num_of_nodes() == 0);
   }
 
   SECTION("Node connection") {
@@ -104,7 +103,7 @@ TEST_CASE("Tree evaluation", "[graph, evaluation]") {
   g.connect<int>(1, qgraph::MathNode::Socket::RESULT, 2,
                  qgraph::MathNode::Socket::RHS);
 
-  REQUIRE(g.nodes.size() == 3);
+  REQUIRE(g.num_of_nodes() == 3);
 
   qgraph::Evaluator eval(g);
   eval.evaluate();

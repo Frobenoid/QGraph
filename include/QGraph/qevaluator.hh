@@ -78,7 +78,7 @@ public:
     if (is_valid_) {
       std::ranges::for_each(execution_order_ | std::views::reverse,
                             [this](const auto node) {
-                              graph_.nodes[node]->execute();
+                              graph_.execute_node(node);
                               graph_.propagate_values(node);
                             });
     } else {

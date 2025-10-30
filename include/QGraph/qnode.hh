@@ -9,6 +9,7 @@
 #include <optional>
 #include <ranges>
 #include <stdexcept>
+#include <string>
 #include <unordered_map>
 #include <vector>
 
@@ -48,7 +49,8 @@ public:
       return in_sockets_[socket];
     } else {
       throw std::invalid_argument(
-          &"Out of bounds access for untyped input socket at "[socket]);
+          "Out of bounds access for untyped input socket at" +
+          std::to_string(socket));
     }
   };
 
@@ -57,7 +59,8 @@ public:
       return out_sockets_[socket];
     } else {
       throw std::invalid_argument(
-          &"Out of bounds access for untyped output socket at "[socket]);
+          "Out of bounds access for untyped output socket at " +
+          std::to_string(socket));
     }
   };
 
@@ -127,7 +130,8 @@ public:
     if (id < in_sockets_.size()) {
       return std::static_pointer_cast<InSocket<T>>(in_sockets_[id]);
     } else {
-      throw std::runtime_error(&"There is no input socket at index "[id]);
+      throw std::out_of_range("Out of bound access for input socket " +
+                              std::to_string(id));
     }
   };
 
@@ -149,7 +153,8 @@ public:
     if (id < out_sockets_.size()) {
       return std::static_pointer_cast<OutSocket<T>>(out_sockets_[id]);
     }
-    throw std::out_of_range("Out of bound output socket");
+    throw std::out_of_range("Out of bound access for output socket " +
+                            std::to_string(id));
   };
 
   auto get_neighbors() const {

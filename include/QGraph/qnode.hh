@@ -62,6 +62,7 @@ public:
   };
 
   template <typename T>
+  [[deprecated("Socket labels will be deprecated")]]
   builder::InSocketBuilder<T> add_input_socket(const std::string &label) {
     if (label.empty()) {
       throw std::invalid_argument("Socket label cannot be empty");
@@ -84,6 +85,7 @@ public:
   };
 
   template <typename T>
+  [[deprecated("Socket labels will be deprecated")]]
   builder::OutSocketBuilder<T> add_output_socket(const std::string &label) {
     if (label.empty()) {
       throw std::invalid_argument("Socket label cannot be empty");
@@ -96,8 +98,8 @@ public:
     if (!out_sockets_labels_.contains(label)) {
       auto new_socket = std::make_shared<qgraph::OutSocket<T>>(label);
       this->out_sockets_.push_back(new_socket);
-      new_socket->id = this->out_sockets_.size() - 1;
-      out_sockets_labels_.insert({label, new_socket->id});
+      new_socket->set_id(this->out_sockets_.size() - 1);
+      out_sockets_labels_.insert({label, new_socket->id()});
       return builder::OutSocketBuilder<T>(new_socket);
     } else {
       throw std::runtime_error("Input socket with name <" + label +
@@ -106,6 +108,7 @@ public:
   };
 
   template <typename T>
+  [[deprecated("Retrieve socket by id instead")]]
   std::optional<std::shared_ptr<qgraph::InSocket<T>>>
   get_input_socket(const std::string &label) {
     if (auto id = in_sockets_labels_.find(label);
@@ -118,15 +121,16 @@ public:
   };
 
   template <typename T>
-  std::optional<std::shared_ptr<InSocket<T>>>
-  get_input_socket(const SocketId id) {
+  std::shared_ptr<InSocket<T>> input_socket(const SocketId id) {
     if (id < in_sockets_.size()) {
       return std::static_pointer_cast<InSocket<T>>(in_sockets_[id]);
-    };
-    return std::nullopt;
+    } else {
+      throw std::runtime_error(&"There is no input socket at index "[id]);
+    }
   };
 
   template <typename T>
+  [[deprecated("Retrieve socket by id instead")]]
   std::optional<std::shared_ptr<qgraph::OutSocket<T>>>
   get_output_socket(const std::string &label) {
     if (auto id = out_sockets_labels_.find(label);
@@ -139,12 +143,11 @@ public:
   };
 
   template <typename T>
-  std::optional<std::shared_ptr<OutSocket<T>>>
-  get_output_socket(const SocketId id) {
+  std::shared_ptr<OutSocket<T>> output_socket(const SocketId id) {
     if (id < out_sockets_.size()) {
       return std::static_pointer_cast<OutSocket<T>>(out_sockets_[id]);
-    };
-    return std::nullopt;
+    }
+    throw std::out_of_range("Out of bound output socket");
   };
 
   auto get_neighbors() const {

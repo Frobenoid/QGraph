@@ -30,7 +30,7 @@ private:
   void dfs() {
     std::ranges::fill(colors_ | std::views::values, WHITE);
 
-    for (int i : std::views::iota(0, graph_.get_number_of_nodes())) {
+    for (int i : std::views::iota(0, (int)graph_.num_of_nodes())) {
       if (colors_[i] == WHITE) {
         dfs_visit(i);
       }

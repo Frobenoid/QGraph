@@ -27,9 +27,9 @@ public:
   };
 
   SocketId id() {
-    return id_.has_value() ? id_.value()
-                           : throw std::runtime_error(
-                                 "The current output socket has no ID");
+    return id_.has_value()
+               ? id_.value()
+               : throw std::runtime_error("The current socket has no ID");
   }
 
   virtual ~Socket() = default;
@@ -42,7 +42,6 @@ template <typename T> class InSocket : public Socket {
 private:
   T default_value_;
   T current_value_;
-  std::optional<SocketId> id_;
   std::optional<Link> connected_to_;
   std::string label_;
 
@@ -77,7 +76,6 @@ template <typename T> class OutSocket : public Socket {
 private:
   T default_value_;
   T current_value_;
-  std::optional<qgraph::SocketId> id_;
   // Set containing all input sockets this is connected to.
   std::set<Link> connected_to_;
   // Label of the node.

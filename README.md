@@ -12,9 +12,21 @@ QGraph is a library for building and evaluating computational graphs. It offers 
 capacity to create nodes with sockets holding custom types and functions that change
 the state of the node whenever called.
 
-## Installation
+## Development
 
-> Working on this...
+This project requires [vkpkg](https://github.com/microsoft/vcpkg), so make sure
+to clone that repository first and follow the instructions [in this documentation](https://learn.microsoft.com/en-us/vcpkg/consume/manifest-mode?tabs=cmake%2Cbuild-MSBuild#2---integrate-vcpkg-with-your-build-system).
+
+Afterwards, run the following commands inside this directory:
+
+```bash
+mkdir build
+cd build
+cmake .. -DCMAKE_TOOLCHAIN_FILE=<path_to_vcpkg>/scripts/buildsystems/vcpkg.cmake -DCMAKE_BUILD_TYPE=Debug
+cmake --build .
+```
+
+Then you can run the tests inside `build/test/tests`.
 
 ## Examples
 

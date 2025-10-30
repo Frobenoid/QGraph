@@ -14,13 +14,13 @@
 
 namespace qgraph {
 template <typename T>
-concept ConceptObject = std::is_base_of<qgraph::Node, T>::value;
+concept DerivesNode = std::is_base_of<qgraph::Node, T>::value;
 
 class Graph {
 public:
   std::vector<std::shared_ptr<qgraph::Node>> nodes;
 
-  template <ConceptObject T, typename... Args> void add_node(Args... args) {
+  template <DerivesNode T, typename... Args> void add_node(Args... args) {
     nodes.emplace_back(std::make_shared<T>(std::forward<Args>(args)...));
     nodes.back()->id = nodes.size() - 1;
   };

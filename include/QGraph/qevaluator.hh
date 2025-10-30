@@ -2,6 +2,7 @@
 
 #include <QGraph/qgraph.hh>
 #include <algorithm>
+#include <cstddef>
 #include <iostream>
 #include <ranges>
 #include <vector>
@@ -30,7 +31,7 @@ private:
   void dfs() {
     std::ranges::fill(colors_ | std::views::values, WHITE);
 
-    for (int i : std::views::iota(0, (int)graph_.num_of_nodes())) {
+    for (int i : std::views::iota(size_t{0}, graph_.num_of_nodes())) {
       if (colors_[i] == WHITE) {
         dfs_visit(i);
       }

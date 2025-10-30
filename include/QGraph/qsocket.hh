@@ -50,7 +50,7 @@ public:
 
   std::optional<Link> connected_to() { return connected_to_; }
 
-  std::string label() const { return label_; }
+  std::string_view label() const { return label_; }
 
   T current_value() const { return current_value_; };
   T default_value() const { return default_value_; };

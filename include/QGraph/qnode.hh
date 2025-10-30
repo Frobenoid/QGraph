@@ -61,6 +61,7 @@ public:
     }
   };
 
+  // TODO: Write appropiate function named `add_input`.
   template <typename T>
   [[deprecated("Socket labels will be deprecated")]]
   builder::InSocketBuilder<T> add_input_socket(const std::string &label) {
@@ -84,6 +85,7 @@ public:
     }
   };
 
+  // TODO: Write appropiate function named `add_output`.
   template <typename T>
   [[deprecated("Socket labels will be deprecated")]]
   builder::OutSocketBuilder<T> add_output_socket(const std::string &label) {

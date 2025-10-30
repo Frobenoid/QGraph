@@ -20,8 +20,11 @@ private:
   // Deprecated, remove this
   std::unordered_map<std::string, std::uint16_t> out_sockets_labels_;
 
-  /// Index in parent graph.
-  NodeId id = -1;
+  // Index in parent graph.
+  // This may not be assigned when the node is initialized
+  // but every node living inside an instance of a graph must
+  // have this id defined.
+  std::optional<NodeId> id_;
 
   std::vector<std::shared_ptr<qgraph::Socket>> in_sockets_;
   std::vector<std::shared_ptr<qgraph::Socket>> out_sockets_;
@@ -29,8 +32,13 @@ private:
 public:
   Node() {};
 
-  NodeId get_id() const { return id; };
-  void set_id(NodeId to) { id = to; };
+  NodeId id() const {
+    return id_.has_value() ? id_.value()
+                           : throw std::runtime_error("Node has no id");
+    ;
+  };
+
+  void set_id(NodeId to) { id_ = to; };
 
   auto num_of_input_sockets() { return in_sockets_.size(); };
   auto num_of_output_sockets() { return out_sockets_.size(); };

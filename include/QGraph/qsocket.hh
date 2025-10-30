@@ -13,8 +13,10 @@
 namespace qgraph {
 
 class Socket {
+private:
+  std::optional<SocketId> id_;
+
 public:
-  SocketId id;
   virtual ~Socket() = default;
   virtual std::set<Link> get_neighbors() const { return {}; };
   virtual void set_current_value(const std::any to) {};

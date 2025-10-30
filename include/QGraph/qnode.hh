@@ -16,9 +16,9 @@
 namespace qgraph {
 class Node {
 private:
-  // Deprecated, remove this
+  [[deprecated("Socket labels will be removed")]]
   std::unordered_map<std::string, std::uint16_t> in_sockets_labels_;
-  // Deprecated, remove this
+  [[deprecated("Socket labels will be removed")]]
   std::unordered_map<std::string, std::uint16_t> out_sockets_labels_;
 
   // Index in parent graph.

@@ -30,10 +30,7 @@ public:
   Node() {};
 
   NodeId get_id() const { return id; };
-  void set_id(NodeId to) {
-    if (id < 0)
-      id = to;
-  };
+  void set_id(NodeId to) { id = to; };
 
   auto num_of_input_sockets() { return in_sockets_.size(); };
   auto num_of_output_sockets() { return out_sockets_.size(); };
@@ -69,8 +66,8 @@ public:
     if (!in_sockets_labels_.contains(label)) {
       auto new_socket = std::make_shared<qgraph::InSocket<T>>(label);
       this->in_sockets_.push_back(new_socket);
-      new_socket->id = this->in_sockets_.size() - 1;
-      in_sockets_labels_.insert({label, new_socket->id});
+      new_socket->set_id(this->in_sockets_.size() - 1);
+      in_sockets_labels_.insert({label, new_socket->id()});
       return builder::InSocketBuilder<T>(new_socket);
     } else {
       throw std::runtime_error("Input socket with name <" + label +

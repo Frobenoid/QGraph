@@ -38,7 +38,7 @@ public:
     std::shared_ptr<qgraph::InSocket<F>> b =
         get_node(to_node)->get_input_socket<F>(at_in_socket).value();
 
-    a->connect(to_node, b->id);
+    a->connect(to_node, b->id());
     b->connect(from_node, a->id);
   };
 
@@ -59,7 +59,7 @@ public:
 
     assert(at_in_socket < b->num_of_input_sockets());
 
-    a_socket->connect(to_node, b_socket->id);
+    a_socket->connect(to_node, b_socket->id());
     b_socket->connect(from_node, a_socket->id);
   };
 

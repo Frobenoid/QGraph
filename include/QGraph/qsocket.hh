@@ -25,14 +25,28 @@ template <typename T> class InSocket : public Socket {
 private:
   T default_value_;
   T current_value_;
+  // Index in parent node input sockets.
+  // May not be initialized when the socket is created.
+  std::optional<SocketId> id_;
+  std::optional<Link> connected_to_;
+  std::string label_;
 
 public:
-  // Index in parent node input sockets.
-  SocketId id;
-  std::optional<Link> connected_to;
-  std::string label;
+  InSocket(const std::string &label) : label_(label) {};
 
-  InSocket(const std::string &label) : label(label) {};
+  void set_id(SocketId to) {
+    if (!id_.has_value()) {
+      id_ = to;
+    }
+  };
+
+  std::optional<Link> connected_to() { return connected_to_; }
+
+  SocketId id() {
+    return id_.has_value() ? id_.value() : throw("Current socket has no id");
+  }
+
+  std::string label() const { return label_; }
 
   T get_current_value() const { return current_value_; };
   T get_default_value() const { return default_value_; };
@@ -48,10 +62,10 @@ public:
   };
 
   void connect(const qgraph::NodeId to_node, const qgraph::SocketId at_socket) {
-    connected_to = Link{id, to_node, at_socket};
+    connected_to_ = Link{this->id(), to_node, at_socket};
   };
 
-  void disconnect() { connected_to.reset(); };
+  void disconnect() { connected_to_.reset(); };
 };
 
 template <typename T> class OutSocket : public Socket {

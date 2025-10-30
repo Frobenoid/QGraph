@@ -18,7 +18,7 @@ TEST_CASE("Socket builder", "[socket]") {
 
   REQUIRE(a->get_default_value() == 10);
   REQUIRE(a->get_current_value() == 10);
-  REQUIRE(a->label == std::string_view("Input"));
+  REQUIRE(a->label() == std::string_view("Input"));
 
   REQUIRE(b->get_default_value() == false);
   REQUIRE(b->get_current_value() == false);
@@ -83,7 +83,8 @@ TEST_CASE("Tree construction", "[graph, node]") {
 
     auto source =
         g.get_node(0)->get_output_socket<int>("C").value()->connected_to;
-    auto dest = g.get_node(1)->get_input_socket<int>("A").value()->connected_to;
+    auto dest =
+        g.get_node(1)->get_input_socket<int>("A").value()->connected_to();
 
     REQUIRE(source.size() == 1);
     REQUIRE(dest.has_value());

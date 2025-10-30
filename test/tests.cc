@@ -15,8 +15,8 @@ TEST_CASE("Socket builder", "[socket]") {
   auto a = n.get_input_socket<int>("Input").value();
   auto b = n.get_output_socket<bool>("Condition").value();
 
-  REQUIRE(a->get_default_value() == 10);
-  REQUIRE(a->get_current_value() == 10);
+  REQUIRE(a->default_value() == 10);
+  REQUIRE(a->current_value() == 10);
   REQUIRE(a->label() == std::string_view("Input"));
 
   REQUIRE(b->get_default_value() == false);
@@ -29,8 +29,8 @@ TEST_CASE("Change current value", "[socket]") {
   n.add_input_socket<float>("A").with_default_value(10.0);
   n.get_input_socket<float>("A").value()->set_current_value(11.5);
 
-  REQUIRE(n.get_input_socket<float>("A").value()->get_current_value() == 11.5);
-  REQUIRE(n.get_input_socket<float>("A").value()->get_default_value() == 10.0);
+  REQUIRE(n.get_input_socket<float>("A").value()->current_value() == 11.5);
+  REQUIRE(n.get_input_socket<float>("A").value()->default_value() == 10.0);
 }
 
 TEST_CASE("Nodes", "[node]") {

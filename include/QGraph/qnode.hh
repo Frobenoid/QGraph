@@ -174,8 +174,8 @@ public:
   };
 
   void execute() override {
-    auto a = get_input_socket<int>("A").value()->get_current_value();
-    auto b = get_input_socket<int>("B").value()->get_current_value();
+    auto a = get_input_socket<int>("A").value()->current_value();
+    auto b = get_input_socket<int>("B").value()->current_value();
     get_output_socket<int>("C").value()->set_current_value(a + b);
   };
 };
@@ -190,9 +190,9 @@ public:
 
   void execute() override {
     bool condition =
-        get_input_socket<bool>("Condition").value()->get_current_value();
+        get_input_socket<bool>("Condition").value()->current_value();
 
-    int value = get_input_socket<int>("Value").value()->get_current_value();
+    int value = get_input_socket<int>("Value").value()->current_value();
     auto out = get_output_socket<int>("Value").value();
 
     if (condition) {

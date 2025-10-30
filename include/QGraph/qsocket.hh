@@ -50,8 +50,8 @@ public:
 
   std::string label() const { return label_; }
 
-  T get_current_value() const { return current_value_; };
-  T get_default_value() const { return default_value_; };
+  T current_value() const { return current_value_; };
+  T default_value() const { return default_value_; };
 
   void set_current_value(const std::any to) override {
     current_value_ = std::any_cast<T>(to);

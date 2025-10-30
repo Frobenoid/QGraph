@@ -36,8 +36,8 @@ public:
   };
 
   void execute() override {
-    auto a = get_input_socket<int>(Socket::LHS).value()->get_current_value();
-    auto b = get_input_socket<int>(Socket::RHS).value()->get_current_value();
+    auto a = get_input_socket<int>(Socket::LHS).value()->current_value();
+    auto b = get_input_socket<int>(Socket::RHS).value()->current_value();
     switch (this->operation) {
 
     case SUM:

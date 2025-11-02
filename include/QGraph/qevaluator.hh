@@ -14,7 +14,6 @@ private:
 
   Graph &graph_;
   std::vector<NodeId> execution_order_;
-  std::set<NodeId> visited_;
   bool is_valid_ = true;
   std::unordered_map<NodeId, Color> colors_;
 
@@ -40,8 +39,6 @@ private:
 
   void dfs_visit(NodeId node) {
     colors_[node] = GRAY;
-
-    visited_.insert(node);
 
     auto neighbors = graph_.node(node)->get_neighbors();
 

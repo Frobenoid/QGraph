@@ -38,24 +38,24 @@ public:
     nodes_.back()->set_id(nodes_.size() - 1);
   };
 
-  template <typename F>
-  [[deprecated("Socket labels will be removed")]]
-  void
-  connect_deprecated(qgraph::NodeId from_node, const std::string &at_out_socket,
-                     qgraph::NodeId to_node, const std::string &at_in_socket) {
-
-    assert(from_node < nodes_.size());
-    assert(to_node < nodes_.size());
-
-    std::shared_ptr<qgraph::OutSocket<F>> a =
-        node(from_node)->output_socket<F>(at_out_socket).value();
-
-    std::shared_ptr<qgraph::InSocket<F>> b =
-        node(to_node)->input_socket<F>(at_in_socket).value();
-
-    a->connect(to_node, b->id());
-    b->connect(from_node, a->id());
-  };
+//  template <typename F>
+//  [[deprecated("Socket labels will be removed")]]
+//  void
+//  connect_deprecated(qgraph::NodeId from_node, const std::string &at_out_socket,
+//                     qgraph::NodeId to_node, const std::string &at_in_socket) {
+//
+//    assert(from_node < nodes_.size());
+//    assert(to_node < nodes_.size());
+//
+//    std::shared_ptr<qgraph::OutSocket<F>> a =
+//        node(from_node)->output_socket<F>(at_out_socket).value();
+//
+//    std::shared_ptr<qgraph::InSocket<F>> b =
+//        node(to_node)->input_socket<F>(at_in_socket).value();
+//
+//    a->connect(to_node, b->id());
+//    b->connect(from_node, a->id());
+//  };
 
   template <typename F>
   void connect(NodeId from_node, const SocketId at_out_socket, NodeId to_node,

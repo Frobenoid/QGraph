@@ -16,10 +16,10 @@
 namespace qgraph {
 class Node {
 private:
-  [[deprecated("Socket labels will be removed")]]
-  std::unordered_map<std::string, std::uint16_t> in_sockets_labels_;
-  [[deprecated("Socket labels will be removed")]]
-  std::unordered_map<std::string, std::uint16_t> out_sockets_labels_;
+//*  [[deprecated("Socket labels will be removed")]]
+//*  std::unordered_map<std::string, std::uint16_t> in_sockets_labels_;
+//*  [[deprecated("Socket labels will be removed")]]
+//*  std::unordered_map<std::string, std::uint16_t> out_sockets_labels_;
 
   // Index in parent graph.
   // This may not be assigned when the node is initialized
@@ -65,65 +65,65 @@ public:
   };
 
   // TODO: Write appropiate function named `add_input`.
-  template <typename T>
-  [[deprecated("Socket labels will be deprecated")]]
-  builder::InSocketBuilder<T> add_input_socket(const std::string &label) {
-    if (label.empty()) {
-      throw std::invalid_argument("Socket label cannot be empty");
-    }
-
-    if (in_sockets_labels_.size() >= std::numeric_limits<uint16_t>::max()) {
-      throw std::runtime_error("Maximum number of input sockets reached");
-    }
-
-    if (!in_sockets_labels_.contains(label)) {
-      auto new_socket = std::make_shared<qgraph::InSocket<T>>(label);
-      this->in_sockets_.push_back(new_socket);
-      new_socket->set_id(this->in_sockets_.size() - 1);
-      in_sockets_labels_.insert({label, new_socket->id()});
-      return builder::InSocketBuilder<T>(new_socket);
-    } else {
-      throw std::runtime_error("Input socket with name <" + label +
-                               "> already exists");
-    }
-  };
+//*  template <typename T>
+//*  [[deprecated("Socket labels will be deprecated")]]
+//*  builder::InSocketBuilder<T> add_input_socket(const std::string &label) {
+//*    if (label.empty()) {
+//*      throw std::invalid_argument("Socket label cannot be empty");
+//*    }
+//*
+//*    if (in_sockets_labels_.size() >= std::numeric_limits<uint16_t>::max()) {
+//*      throw std::runtime_error("Maximum number of input sockets reached");
+//*    }
+//*
+//*    if (!in_sockets_labels_.contains(label)) {
+//*      auto new_socket = std::make_shared<qgraph::InSocket<T>>(label);
+//*      this->in_sockets_.push_back(new_socket);
+//*      new_socket->set_id(this->in_sockets_.size() - 1);
+//*      in_sockets_labels_.insert({label, new_socket->id()});
+//*      return builder::InSocketBuilder<T>(new_socket);
+//*    } else {
+//*      throw std::runtime_error("Input socket with name <" + label +
+//*                               "> already exists");
+//*    }
+//*  };
 
   // TODO: Write appropiate function named `add_output`.
-  template <typename T>
-  [[deprecated("Socket labels will be deprecated")]]
-  builder::OutSocketBuilder<T> add_output_socket(const std::string &label) {
-    if (label.empty()) {
-      throw std::invalid_argument("Socket label cannot be empty");
-    }
+//*  template <typename T>
+//*  [[deprecated("Socket labels will be deprecated")]]
+//*  builder::OutSocketBuilder<T> add_output_socket(const std::string &label) {
+//*    if (label.empty()) {
+//*      throw std::invalid_argument("Socket label cannot be empty");
+//*    }
+//*
+//*    if (out_sockets_labels_.size() >= std::numeric_limits<uint16_t>::max()) {
+//*      throw std::runtime_error("Maximum number of output sockets reached");
+//*    }
+//*
+//*    if (!out_sockets_labels_.contains(label)) {
+//*      auto new_socket = std::make_shared<qgraph::OutSocket<T>>(label);
+//*      this->out_sockets_.push_back(new_socket);
+//*      new_socket->set_id(this->out_sockets_.size() - 1);
+//*      out_sockets_labels_.insert({label, new_socket->id()});
+//*      return builder::OutSocketBuilder<T>(new_socket);
+//*    } else {
+//*      throw std::runtime_error("Input socket with name <" + label +
+//*                               "> already exists");
+//*    }
+//*  };
 
-    if (out_sockets_labels_.size() >= std::numeric_limits<uint16_t>::max()) {
-      throw std::runtime_error("Maximum number of output sockets reached");
-    }
-
-    if (!out_sockets_labels_.contains(label)) {
-      auto new_socket = std::make_shared<qgraph::OutSocket<T>>(label);
-      this->out_sockets_.push_back(new_socket);
-      new_socket->set_id(this->out_sockets_.size() - 1);
-      out_sockets_labels_.insert({label, new_socket->id()});
-      return builder::OutSocketBuilder<T>(new_socket);
-    } else {
-      throw std::runtime_error("Input socket with name <" + label +
-                               "> already exists");
-    }
-  };
-
-  template <typename T>
-  [[deprecated("Retrieve socket by id instead")]]
-  std::optional<std::shared_ptr<qgraph::InSocket<T>>>
-  get_input_socket(const std::string &label) {
-    if (auto id = in_sockets_labels_.find(label);
-        id != in_sockets_labels_.end()) {
-      auto base_prt = this->in_sockets_[id->second];
-      return std::static_pointer_cast<qgraph::InSocket<T>>(base_prt);
-    }
-
-    return std::nullopt;
-  };
+//*  template <typename T>
+//*  [[deprecated("Retrieve socket by id instead")]]
+//*  std::optional<std::shared_ptr<qgraph::InSocket<T>>>
+//*  get_input_socket(const std::string &label) {
+//*    if (auto id = in_sockets_labels_.find(label);
+//*        id != in_sockets_labels_.end()) {
+//*      auto base_prt = this->in_sockets_[id->second];
+//*      return std::static_pointer_cast<qgraph::InSocket<T>>(base_prt);
+//*    }
+//*
+//*    return std::nullopt;
+//*  };
 
   template <typename T>
   std::shared_ptr<InSocket<T>> input_socket(const SocketId id) {
@@ -135,18 +135,18 @@ public:
     }
   };
 
-  template <typename T>
-  [[deprecated("Retrieve socket by id instead")]]
-  std::optional<std::shared_ptr<qgraph::OutSocket<T>>>
-  get_output_socket(const std::string &label) {
-    if (auto id = out_sockets_labels_.find(label);
-        id != out_sockets_labels_.end()) {
-      auto base_ptr = this->out_sockets_[id->second];
-      return std::static_pointer_cast<qgraph::OutSocket<T>>(base_ptr);
-    }
-
-    return std::nullopt;
-  };
+//*  template <typename T>
+//*  [[deprecated("Retrieve socket by id instead")]]
+//*  std::optional<std::shared_ptr<qgraph::OutSocket<T>>>
+//*  get_output_socket(const std::string &label) {
+//*    if (auto id = out_sockets_labels_.find(label);
+//*        id != out_sockets_labels_.end()) {
+//*      auto base_ptr = this->out_sockets_[id->second];
+//*      return std::static_pointer_cast<qgraph::OutSocket<T>>(base_ptr);
+//*    }
+//*
+//*    return std::nullopt;
+//*  };
 
   template <typename T>
   std::shared_ptr<OutSocket<T>> output_socket(const SocketId id) {
@@ -178,32 +178,32 @@ public:
   };
 
   MathNode() {
-    add_input_socket<int>("A").with_default_value(1);
-    add_input_socket<int>("B").with_default_value(1);
-    add_output_socket<int>("C").with_default_value(0);
+    input_socket<int>("A").with_default_value(1);
+    input_socket<int>("B").with_default_value(1);
+    output_socket<int>("C").with_default_value(0);
   };
 
   void execute() override {
-    auto a = get_input_socket<int>("A").value()->current_value();
-    auto b = get_input_socket<int>("B").value()->current_value();
-    get_output_socket<int>("C").value()->set_current_value(a + b);
+    auto a = input_socket<int>("A").value()->current_value();
+    auto b = input_socket<int>("B").value()->current_value();
+    output_socket<int>("C").value()->set_current_value(a + b);
   };
 };
 
 class IncrNode : public Node {
 public:
   IncrNode() {
-    add_input_socket<int>("Value").with_default_value(10);
-    add_input_socket<bool>("Condition").with_default_value(true);
-    add_output_socket<int>("Value").with_default_value(0);
+    input_socket<int>("Value").with_default_value(10);
+    input_socket<bool>("Condition").with_default_value(true);
+    output_socket<int>("Value").with_default_value(0);
   };
 
   void execute() override {
     bool condition =
-        get_input_socket<bool>("Condition").value()->current_value();
+        input_socket<bool>("Condition").value()->current_value();
 
-    int value = get_input_socket<int>("Value").value()->current_value();
-    auto out = get_output_socket<int>("Value").value();
+    int value = input_socket<int>("Value").value()->current_value();
+    auto out = output_socket<int>("Value").value();
 
     if (condition) {
       out->set_current_value(value + 1);
@@ -215,7 +215,7 @@ class ConstantNode : public Node {
 public:
   enum Socket { Value = 0 };
 
-  ConstantNode() { add_output_socket<int>("Output").with_default_value(0); }
+  ConstantNode() { output_socket<int>("Output").with_default_value(0); }
   void execute() override {};
 };
 } // namespace qgraph

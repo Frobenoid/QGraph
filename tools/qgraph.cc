@@ -10,7 +10,7 @@ public:
   };
 
   ConstantNode(const int value) {
-    add_output_socket<int>("Output").with_default_value(value);
+    output_socket<int>("Output").with_default_value(value);
   };
 };
 
@@ -30,9 +30,9 @@ public:
 
   MathNode(Operation operation = SUM) {
     this->operation = operation;
-    add_input_socket<int>("A").with_default_value(1);
-    add_input_socket<int>("B").with_default_value(1);
-    add_output_socket<int>("C").with_default_value(0);
+    input_socket<int>("A").with_default_value(1);
+    input_socket<int>("B").with_default_value(1);
+    output_socket<int>("C").with_default_value(0);
   };
 
   void execute() override {

@@ -20,7 +20,6 @@ private:
   std::unordered_map<std::string, std::uint16_t> in_sockets_labels_;
   [[deprecated("Socket labels will be removed")]]
   std::unordered_map<std::string, std::uint16_t> out_sockets_labels_;
-
   // Index in parent graph.
   // This may not be assigned when the node is initialized
   // but every node living inside an instance of a graph must
@@ -113,19 +112,6 @@ public:
   };
 
   template <typename T>
-  [[deprecated("Retrieve socket by id instead")]]
-  std::optional<std::shared_ptr<qgraph::InSocket<T>>>
-  get_input_socket(const std::string &label) {
-    if (auto id = in_sockets_labels_.find(label);
-        id != in_sockets_labels_.end()) {
-      auto base_prt = this->in_sockets_[id->second];
-      return std::static_pointer_cast<qgraph::InSocket<T>>(base_prt);
-    }
-
-    return std::nullopt;
-  };
-
-  template <typename T>
   std::shared_ptr<InSocket<T>> input_socket(const SocketId id) {
     if (id < in_sockets_.size()) {
       return std::static_pointer_cast<InSocket<T>>(in_sockets_[id]);
@@ -133,19 +119,6 @@ public:
       throw std::out_of_range("Out of bound access for input socket " +
                               std::to_string(id));
     }
-  };
-
-  template <typename T>
-  [[deprecated("Retrieve socket by id instead")]]
-  std::optional<std::shared_ptr<qgraph::OutSocket<T>>>
-  get_output_socket(const std::string &label) {
-    if (auto id = out_sockets_labels_.find(label);
-        id != out_sockets_labels_.end()) {
-      auto base_ptr = this->out_sockets_[id->second];
-      return std::static_pointer_cast<qgraph::OutSocket<T>>(base_ptr);
-    }
-
-    return std::nullopt;
   };
 
   template <typename T>
@@ -184,9 +157,9 @@ public:
   };
 
   void execute() override {
-    auto a = get_input_socket<int>("A").value()->current_value();
-    auto b = get_input_socket<int>("B").value()->current_value();
-    get_output_socket<int>("C").value()->set_current_value(a + b);
+    auto a = input_socket<int>(0).value()->current_value();
+    auto b = input_socket<int>(1).value()->current_value();
+    get_output_socket<int>(0).value()->set_current_value(a + b);
   };
 };
 
@@ -200,10 +173,10 @@ public:
 
   void execute() override {
     bool condition =
-        get_input_socket<bool>("Condition").value()->current_value();
+        get_input_socket<bool>(1).value()->current_value();
 
-    int value = get_input_socket<int>("Value").value()->current_value();
-    auto out = get_output_socket<int>("Value").value();
+    int value = input_socket<int>(0).value()->current_value();
+    auto out = output_socket<int>(0).value();
 
     if (condition) {
       out->set_current_value(value + 1);
